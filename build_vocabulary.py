@@ -12,6 +12,10 @@ OUTPUT = ROOT / "vocabulary.json"
 XML_NS = {"main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 REL_NS = {"rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
 OFFICE_DOC_REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+SUPPORTED_LANGUAGES = {
+    "en": "english",
+    "fr": "french",
+}
 
 
 def parse_shared_strings(archive: zipfile.ZipFile) -> list[str]:
@@ -43,7 +47,7 @@ def read_cell_value(cell: ET.Element, shared_strings: list[str]) -> str:
     return raw_value
 
 
-def load_vocabulary() -> list[dict[str, str]]:
+def load_vocabulary() -> tuple[list[str], list[dict[str, object]]]:
     if not WORKBOOK.exists():
         raise FileNotFoundError(f"Workbook not found: {WORKBOOK}")
 
@@ -84,25 +88,42 @@ def load_vocabulary() -> list[dict[str, str]]:
     header_row = rows[0]
     column_lookup = {value.strip().lower(): key for key, value in header_row.items()}
     german_column = column_lookup.get("de")
-    english_column = column_lookup.get("en")
+    if not german_column:
+        raise ValueError("Die Excel-Datei braucht in der ersten Zeile eine Spalte 'DE'.")
 
-    if not german_column or not english_column:
-        raise ValueError("The workbook must contain 'DE' and 'EN' columns in the first row.")
-
-    return [
-        {
-            "german": row.get(german_column, "").strip(),
-            "english": row.get(english_column, "").strip(),
-        }
-        for row in rows[1:]
-        if row.get(german_column, "").strip() and row.get(english_column, "").strip()
+    available_languages = [
+        language_code
+        for language_code in SUPPORTED_LANGUAGES
+        if column_lookup.get(language_code)
     ]
+
+    if not available_languages:
+        raise ValueError("Die Excel-Datei braucht mindestens eine Spalte 'EN' oder 'FR'.")
+
+    items: list[dict[str, object]] = []
+
+    for row in rows[1:]:
+        german = row.get(german_column, "").strip()
+        if not german:
+            continue
+
+        translations = {
+            language_code: row.get(column_lookup[language_code], "").strip()
+            for language_code in available_languages
+            if row.get(column_lookup[language_code], "").strip()
+        }
+
+        if translations:
+            items.append({"german": german, "translations": translations})
+
+    return available_languages, items
 
 
 def main() -> None:
-    payload = {"items": load_vocabulary()}
+    languages, items = load_vocabulary()
+    payload = {"languages": languages, "items": items}
     OUTPUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"Wrote {len(payload['items'])} vocabulary items to {OUTPUT.name}")
+    print(f"Wrote {len(items)} vocabulary items to {OUTPUT.name}")
 
 
 if __name__ == "__main__":

@@ -1,20 +1,31 @@
 {
+  "languages": [
+    "en"
+  ],
   "items": [
     {
       "german": "ein",
-      "english": "one"
+      "translations": {
+        "en": "one"
+      }
     },
     {
       "german": "zwei",
-      "english": "two"
+      "translations": {
+        "en": "two"
+      }
     },
     {
       "german": "drei",
-      "english": "three"
+      "translations": {
+        "en": "three"
+      }
     },
     {
       "german": "vier",
-      "english": "four"
+      "translations": {
+        "en": "four"
+      }
     }
   ]
 }

@@ -1,31 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Voci Flashcards</title>
+    <title>Voci Lernkarten</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" defer></script>
   </head>
   <body>
     <main class="page-shell">
       <section class="hero-panel">
-        <p class="eyebrow">German to English</p>
-        <h1>Voci Flashcards</h1>
+        <p class="eyebrow">Deutsch -> Englisch / Französisch</p>
+        <h1>Voci Lernkarten</h1>
         <p class="hero-copy">
-          Type the English word for each German card. Every vocabulary word needs
-          5 first-try wins before the game is complete.
+          Gib die passende Uebersetzung ein. Jedes Wort muss 5 Mal beim ersten
+          Versuch richtig beantwortet werden.
         </p>
       </section>
 
       <section class="game-card" aria-live="polite">
+        <div class="language-picker hidden" id="language-picker">
+          <p class="status-label">Lernsprache</p>
+          <div class="language-buttons" id="language-buttons"></div>
+        </div>
+
         <div class="status-row">
           <div>
-            <p class="status-label">Overall progress</p>
+            <p class="status-label">Gesamtfortschritt</p>
             <p class="status-value" id="overall-progress">0 / 0</p>
           </div>
           <div>
-            <p class="status-label">Words mastered</p>
+            <p class="status-label">Fertige Woerter</p>
             <p class="status-value" id="mastered-progress">0 / 0</p>
           </div>
         </div>
@@ -35,7 +40,7 @@
         </div>
 
         <div id="loading-state" class="message-panel">
-          <p>Loading your vocabulary list...</p>
+          <p>Deine Woerterliste wird geladen ...</p>
         </div>
 
         <div id="error-state" class="message-panel hidden">
@@ -43,12 +48,12 @@
         </div>
 
         <div id="game-state" class="hidden">
-          <p class="prompt-label">Translate this word</p>
+          <p class="prompt-label" id="prompt-label">Uebersetze dieses Wort</p>
           <div class="flashcard-word" id="german-word">...</div>
-          <p class="card-progress" id="card-progress">First-try wins: 0 / 5</p>
+          <p class="card-progress" id="card-progress">Beim ersten Versuch richtig: 0 / 5</p>
 
           <form id="answer-form" autocomplete="off">
-            <label class="input-label" for="answer-input">English answer</label>
+            <label class="input-label" for="answer-input" id="answer-label">Deine Antwort</label>
             <input
               id="answer-input"
               name="answer"
@@ -58,16 +63,16 @@
               autocomplete="off"
               required
             />
-            <button id="submit-button" type="submit">Check answer</button>
+            <button id="submit-button" type="submit">Pruefen</button>
           </form>
 
           <p class="feedback" id="feedback-text"></p>
         </div>
 
         <div id="complete-state" class="message-panel hidden">
-          <p class="complete-title">All done!</p>
-          <p>You answered every word correctly on the first try 5 times.</p>
-          <button id="restart-button" type="button">Play again</button>
+          <p class="complete-title">Geschafft!</p>
+          <p>Du hast alle Woerter 5 Mal beim ersten Versuch richtig beantwortet.</p>
+          <button id="restart-button" type="button">Noch einmal spielen</button>
         </div>
       </section>
     </main>

@@ -9,13 +9,13 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v2</p>
+      <p class="version-badge">v3</p>
 
       <section class="hero-panel">
         <p class="eyebrow">Deutsch -> Englisch / Französisch</p>
         <h1>Voci Lernkarten</h1>
         <p class="hero-copy">
-          Gib die passende Uebersetzung ein. Jedes Wort kommt 5 Mal in
+          Gib die passende Übersetzung ein. Jedes Wort kommt 5 Mal in
           gemischter Reihenfolge dran.
         </p>
       </section>
@@ -32,7 +32,7 @@
             <p class="status-value" id="overall-progress">0 / 0</p>
           </div>
           <div>
-            <p class="status-label">Fertige Woerter</p>
+            <p class="status-label">Fertige Wörter</p>
             <p class="status-value" id="mastered-progress">0 / 0</p>
           </div>
         </div>
@@ -42,7 +42,7 @@
         </div>
 
         <div id="loading-state" class="message-panel">
-          <p>Deine Woerterliste wird geladen ...</p>
+          <p>Deine Wörterliste wird geladen ...</p>
         </div>
 
         <div id="error-state" class="message-panel hidden">
@@ -50,9 +50,9 @@
         </div>
 
         <div id="game-state" class="hidden">
-          <p class="prompt-label" id="prompt-label">Uebersetze dieses Wort</p>
+          <p class="prompt-label" id="prompt-label">Übersetze dieses Wort</p>
           <div class="flashcard-word" id="german-word">...</div>
-          <p class="card-progress" id="card-progress">Schon richtig geloest: 0 / 5</p>
+          <p class="card-progress" id="card-progress">Schon richtig gelöst: 0 / 5</p>
 
           <form id="answer-form" autocomplete="off">
             <label class="input-label" for="answer-input" id="answer-label">Deine Antwort</label>
@@ -65,7 +65,7 @@
               autocomplete="off"
               required
             />
-            <button id="submit-button" type="submit">Pruefen</button>
+            <button id="submit-button" type="submit">Prüfen</button>
           </form>
 
           <p class="feedback" id="feedback-text"></p>
@@ -73,7 +73,7 @@
 
         <div id="complete-state" class="message-panel hidden">
           <p class="complete-title">Geschafft!</p>
-          <p>Du hast alle Woerter 5 Mal richtig beantwortet.</p>
+          <p>Du hast alle Wörter 5 Mal richtig beantwortet.</p>
           <button id="restart-button" type="button">Noch einmal spielen</button>
         </div>
       </section>

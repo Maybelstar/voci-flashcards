@@ -2,7 +2,7 @@ const GOAL_PER_CARD = 5;
 const ADVANCE_DELAY_MS = 700;
 const LANGUAGE_LABELS = {
   en: "Englisch",
-  fr: "Franzoesisch",
+  fr: "Französisch",
 };
 
 const state = {
@@ -133,7 +133,7 @@ function updateProgress() {
   elements.progressFill.style.width = `${progressPercent}%`;
 
   if (state.currentCard) {
-    elements.cardProgress.textContent = `Schon richtig geloest: ${state.currentCard.correctCount} / ${GOAL_PER_CARD}`;
+    elements.cardProgress.textContent = `Schon richtig gelöst: ${state.currentCard.correctCount} / ${GOAL_PER_CARD}`;
   }
 }
 
@@ -168,8 +168,9 @@ function presentCard(card) {
   elements.germanWord.textContent = card.german;
   elements.answerInput.value = "";
   elements.answerInput.disabled = false;
+  elements.answerInput.readOnly = false;
   elements.submitButton.disabled = false;
-  elements.submitButton.textContent = "Pruefen";
+  elements.submitButton.textContent = "Prüfen";
   setFeedback("");
   updateProgress();
   showGame();
@@ -212,9 +213,12 @@ function handleCorrectAnswer() {
 }
 
 function handleWrongAnswer() {
+  state.currentMode = "wrong-feedback";
   elements.answerInput.value = "";
+  elements.answerInput.readOnly = true;
+  elements.submitButton.textContent = "Weiter";
   setFeedback(
-    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Versuch es noch einmal.`,
+    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Drücke Enter, dann kannst du es noch einmal versuchen.`,
     "is-error"
   );
   focusInput();
@@ -233,6 +237,15 @@ function handleSubmit(event) {
 
   if (state.currentMode === "complete") {
     startGame();
+    return;
+  }
+
+  if (state.currentMode === "wrong-feedback") {
+    state.currentMode = "answering";
+    elements.answerInput.readOnly = false;
+    elements.submitButton.textContent = "Prüfen";
+    setFeedback("");
+    focusInput();
     return;
   }
 
@@ -262,7 +275,7 @@ function showError(message) {
 
 function updateLanguageCopy() {
   const languageLabel = getLanguageLabel(state.currentLanguage);
-  elements.promptLabel.textContent = `Wie heisst dieses Wort auf ${languageLabel}?`;
+  elements.promptLabel.textContent = `Wie heißt dieses Wort auf ${languageLabel}?`;
   elements.answerLabel.textContent = `Antwort auf ${languageLabel}`;
 }
 
@@ -313,7 +326,7 @@ async function loadVocabulary() {
     const languages = Array.isArray(payload.languages) ? payload.languages : ["en"];
 
     if (items.length === 0) {
-      throw new Error("In der Datei vocabulary.json wurden keine Woerter gefunden.");
+      throw new Error("In der Datei vocabulary.json wurden keine Wörter gefunden.");
     }
 
     state.cards = items.map((item, index) => ({
@@ -331,8 +344,8 @@ async function loadVocabulary() {
   } catch (error) {
     showError(
       error instanceof Error
-        ? `${error.message} Wenn du voci.xlsx geaendert hast, fuehre vorher build_vocabulary.py aus.`
-        : "Die Woerter konnten nicht geladen werden."
+        ? `${error.message} Wenn du voci.xlsx geändert hast, führe vorher build_vocabulary.py aus.`
+        : "Die Wörter konnten nicht geladen werden."
     );
   }
 }

@@ -26,6 +26,12 @@
       "translations": {
         "en": "four"
       }
+    },
+    {
+      "german": "Haus",
+      "translations": {
+        "en": "house"
+      }
     }
   ]
 }

@@ -2,6 +2,7 @@ const GOAL_PER_CARD = 5;
 
 const state = {
   cards: [],
+  cardDeck: [],
   currentCard: null,
   currentMode: "loading",
   missedThisRound: false,
@@ -42,15 +43,15 @@ function isCorrectAnswer(input, english) {
   return getAcceptedAnswers(english).includes(normalizedInput);
 }
 
-function shufflePick(items) {
-  if (items.length === 1) {
-    return items[0];
+function shuffleCards(items) {
+  const shuffled = [...items];
+
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
   }
 
-  const filteredItems = items.filter((item) => item.id !== state.lastCardId);
-  const pool = filteredItems.length > 0 ? filteredItems : items;
-  const randomIndex = Math.floor(Math.random() * pool.length);
-  return pool[randomIndex];
+  return shuffled;
 }
 
 function getIncompleteCards() {
@@ -59,6 +60,47 @@ function getIncompleteCards() {
 
 function getMasteredCards() {
   return state.cards.filter((card) => card.firstTrySuccesses >= GOAL_PER_CARD);
+}
+
+function buildDeck(cards) {
+  const deck = shuffleCards(cards);
+
+  if (deck.length > 1 && deck[0].id === state.lastCardId) {
+    const swapIndex = deck.findIndex((card) => card.id !== state.lastCardId);
+    [deck[0], deck[swapIndex]] = [deck[swapIndex], deck[0]];
+  }
+
+  return deck;
+}
+
+function drawNextCard() {
+  const incompleteCards = getIncompleteCards();
+
+  if (incompleteCards.length === 0) {
+    return null;
+  }
+
+  if (state.cardDeck.length === 0) {
+    state.cardDeck = buildDeck(incompleteCards);
+  }
+
+  while (state.cardDeck.length > 0) {
+    const nextCard = state.cardDeck.shift();
+
+    if (!nextCard || nextCard.firstTrySuccesses >= GOAL_PER_CARD) {
+      continue;
+    }
+
+    if (nextCard.id === state.lastCardId && incompleteCards.length > 1) {
+      state.cardDeck = buildDeck(incompleteCards);
+      continue;
+    }
+
+    return nextCard;
+  }
+
+  state.cardDeck = buildDeck(incompleteCards);
+  return state.cardDeck.shift() || null;
 }
 
 function setFeedback(message, type = "") {
@@ -124,20 +166,21 @@ function presentCard(card) {
 }
 
 function moveToNextCard() {
-  const remaining = getIncompleteCards();
+  const nextCard = drawNextCard();
 
-  if (remaining.length === 0) {
+  if (!nextCard) {
     showCompletion();
     return;
   }
 
-  presentCard(shufflePick(remaining));
+  presentCard(nextCard);
 }
 
 function startGame() {
   state.cards.forEach((card) => {
     card.firstTrySuccesses = 0;
   });
+  state.cardDeck = [];
   state.lastCardId = null;
   moveToNextCard();
 }

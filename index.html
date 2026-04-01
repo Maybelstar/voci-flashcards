@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Voci Flashcards</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-panel">
+        <p class="eyebrow">German to English</p>
+        <h1>Voci Flashcards</h1>
+        <p class="hero-copy">
+          Type the English word for each German card. Every vocabulary word needs
+          5 first-try wins before the game is complete.
+        </p>
+      </section>
+
+      <section class="game-card" aria-live="polite">
+        <div class="status-row">
+          <div>
+            <p class="status-label">Overall progress</p>
+            <p class="status-value" id="overall-progress">0 / 0</p>
+          </div>
+          <div>
+            <p class="status-label">Words mastered</p>
+            <p class="status-value" id="mastered-progress">0 / 0</p>
+          </div>
+        </div>
+
+        <div class="progress-bar" aria-hidden="true">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div id="loading-state" class="message-panel">
+          <p>Loading your vocabulary list...</p>
+        </div>
+
+        <div id="error-state" class="message-panel hidden">
+          <p id="error-message"></p>
+        </div>
+
+        <div id="game-state" class="hidden">
+          <p class="prompt-label">Translate this word</p>
+          <div class="flashcard-word" id="german-word">...</div>
+          <p class="card-progress" id="card-progress">First-try wins: 0 / 5</p>
+
+          <form id="answer-form" autocomplete="off">
+            <label class="input-label" for="answer-input">English answer</label>
+            <input
+              id="answer-input"
+              name="answer"
+              type="text"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+              required
+            />
+            <button id="submit-button" type="submit">Check answer</button>
+          </form>
+
+          <p class="feedback" id="feedback-text"></p>
+        </div>
+
+        <div id="complete-state" class="message-panel hidden">
+          <p class="complete-title">All done!</p>
+          <p>You answered every word correctly on the first try 5 times.</p>
+          <button id="restart-button" type="button">Play again</button>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

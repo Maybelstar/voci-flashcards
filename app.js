@@ -7,12 +7,10 @@ const LANGUAGE_LABELS = {
 
 const state = {
   cards: [],
-  cardDeck: [],
+  cardQueue: [],
   currentCard: null,
   currentLanguage: "en",
   currentMode: "loading",
-  missedThisRound: false,
-  lastCardId: null,
   advanceTimerId: null,
 };
 
@@ -62,10 +60,6 @@ function getCurrentTranslation(card) {
   return card.translations[state.currentLanguage] || "";
 }
 
-function getFirstTrySuccesses(card) {
-  return card.firstTrySuccesses;
-}
-
 function clearAdvanceTimer() {
   if (state.advanceTimerId !== null) {
     window.clearTimeout(state.advanceTimerId);
@@ -84,57 +78,38 @@ function shuffleCards(items) {
   return shuffled;
 }
 
-function getIncompleteCards() {
-  return state.cards.filter(
-    (card) => getCurrentTranslation(card) && getFirstTrySuccesses(card) < GOAL_PER_CARD
-  );
+function getPlayableCards() {
+  return state.cards.filter((card) => getCurrentTranslation(card));
 }
 
 function getMasteredCards() {
-  return state.cards.filter(
-    (card) => getCurrentTranslation(card) && getFirstTrySuccesses(card) >= GOAL_PER_CARD
-  );
+  return getPlayableCards().filter((card) => card.correctCount >= GOAL_PER_CARD);
 }
 
-function buildDeck(cards) {
-  const deck = shuffleCards(cards);
+function buildRound(cards, previousCardId = null) {
+  const round = shuffleCards(cards);
 
-  if (deck.length > 1 && deck[0].id === state.lastCardId) {
-    const swapIndex = deck.findIndex((card) => card.id !== state.lastCardId);
-    [deck[0], deck[swapIndex]] = [deck[swapIndex], deck[0]];
+  if (previousCardId && round.length > 1 && round[0].id === previousCardId) {
+    const swapIndex = round.findIndex((card) => card.id !== previousCardId);
+    if (swapIndex > 0) {
+      [round[0], round[swapIndex]] = [round[swapIndex], round[0]];
+    }
   }
 
-  return deck;
+  return round;
 }
 
-function drawNextCard() {
-  const incompleteCards = getIncompleteCards();
+function buildQueue(cards) {
+  const queue = [];
+  let previousCardId = null;
 
-  if (incompleteCards.length === 0) {
-    return null;
+  for (let roundIndex = 0; roundIndex < GOAL_PER_CARD; roundIndex += 1) {
+    const round = buildRound(cards, previousCardId);
+    queue.push(...round);
+    previousCardId = round.length > 0 ? round[round.length - 1].id : previousCardId;
   }
 
-  if (state.cardDeck.length === 0) {
-    state.cardDeck = buildDeck(incompleteCards);
-  }
-
-  while (state.cardDeck.length > 0) {
-    const nextCard = state.cardDeck.shift();
-
-    if (!nextCard || !getCurrentTranslation(nextCard) || getFirstTrySuccesses(nextCard) >= GOAL_PER_CARD) {
-      continue;
-    }
-
-    if (nextCard.id === state.lastCardId && incompleteCards.length > 1) {
-      state.cardDeck = buildDeck(incompleteCards);
-      continue;
-    }
-
-    return nextCard;
-  }
-
-  state.cardDeck = buildDeck(incompleteCards);
-  return state.cardDeck.shift() || null;
+  return queue;
 }
 
 function setFeedback(message, type = "") {
@@ -147,9 +122,9 @@ function setFeedback(message, type = "") {
 }
 
 function updateProgress() {
-  const playableCards = state.cards.filter((card) => getCurrentTranslation(card));
+  const playableCards = getPlayableCards();
   const totalTarget = playableCards.length * GOAL_PER_CARD;
-  const totalWins = playableCards.reduce((sum, card) => sum + getFirstTrySuccesses(card), 0);
+  const totalWins = playableCards.reduce((sum, card) => sum + card.correctCount, 0);
   const mastered = getMasteredCards().length;
   const progressPercent = totalTarget === 0 ? 0 : (totalWins / totalTarget) * 100;
 
@@ -158,7 +133,7 @@ function updateProgress() {
   elements.progressFill.style.width = `${progressPercent}%`;
 
   if (state.currentCard) {
-    elements.cardProgress.textContent = `Beim ersten Versuch richtig: ${getFirstTrySuccesses(state.currentCard)} / ${GOAL_PER_CARD}`;
+    elements.cardProgress.textContent = `Schon richtig geloest: ${state.currentCard.correctCount} / ${GOAL_PER_CARD}`;
   }
 }
 
@@ -189,8 +164,6 @@ function presentCard(card) {
   clearAdvanceTimer();
   state.currentCard = card;
   state.currentMode = "answering";
-  state.missedThisRound = false;
-  state.lastCardId = card.id;
 
   elements.germanWord.textContent = card.german;
   elements.answerInput.value = "";
@@ -204,7 +177,7 @@ function presentCard(card) {
 }
 
 function moveToNextCard() {
-  const nextCard = drawNextCard();
+  const nextCard = state.cardQueue.shift() || null;
 
   if (!nextCard) {
     showCompletion();
@@ -217,20 +190,14 @@ function moveToNextCard() {
 function startGame() {
   clearAdvanceTimer();
   state.cards.forEach((card) => {
-    card.firstTrySuccesses = 0;
+    card.correctCount = 0;
   });
-  state.cardDeck = [];
-  state.lastCardId = null;
+  state.cardQueue = buildQueue(getPlayableCards());
   moveToNextCard();
 }
 
 function handleCorrectAnswer() {
-  const currentCard = state.currentCard;
-
-  if (!state.missedThisRound) {
-    currentCard.firstTrySuccesses += 1;
-  }
-
+  state.currentCard.correctCount += 1;
   state.currentMode = "transitioning";
   elements.answerInput.value = "";
   elements.answerInput.disabled = true;
@@ -245,12 +212,8 @@ function handleCorrectAnswer() {
 }
 
 function handleWrongAnswer() {
-  state.missedThisRound = true;
   elements.answerInput.value = "";
-  setFeedback(
-    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Schreib sie jetzt bitte noch einmal.`,
-    "is-error"
-  );
+  setFeedback("Falsch. Versuch es noch einmal.", "is-error");
   focusInput();
 }
 
@@ -354,7 +317,7 @@ async function loadVocabulary() {
       id: `${index}-${item.german}`,
       german: item.german,
       translations: item.translations || {},
-      firstTrySuccesses: 0,
+      correctCount: 0,
     }));
     state.currentLanguage = languages.includes("en") ? "en" : languages[0];
 

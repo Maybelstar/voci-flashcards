@@ -213,7 +213,10 @@ function handleCorrectAnswer() {
 
 function handleWrongAnswer() {
   elements.answerInput.value = "";
-  setFeedback("Falsch. Versuch es noch einmal.", "is-error");
+  setFeedback(
+    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Versuch es noch einmal.`,
+    "is-error"
+  );
   focusInput();
 }
 

@@ -9,7 +9,7 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v8</p>
+      <p class="version-badge">v9</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
@@ -27,15 +27,18 @@
 
           <div class="settings-field settings-field-wide">
             <div class="word-picker" id="word-picker">
-              <div class="word-picker-header">
-                <label class="settings-label">Welche Wörter möchtest du üben?</label>
-                <p class="word-picker-count" id="word-picker-count">0 von 0 ausgewählt</p>
+              <button id="word-picker-toggle" class="word-picker-toggle" type="button" aria-expanded="false">
+                <span>Wörter auswählen</span>
+                <span class="word-picker-count" id="word-picker-count">0 von 0 ausgewählt</span>
+              </button>
+              <div class="word-picker-panel hidden" id="word-picker-panel">
+                <div class="word-picker-actions">
+                  <button id="select-all-words" class="secondary-button" type="button">Alle auswählen</button>
+                  <button id="deselect-all-words" class="secondary-button" type="button">Alle abwählen</button>
+                  <button id="close-word-picker" class="secondary-button" type="button">Fertig</button>
+                </div>
+                <div class="word-picker-list" id="word-picker-list"></div>
               </div>
-              <div class="word-picker-actions">
-                <button id="select-all-words" class="secondary-button" type="button">Alle auswählen</button>
-                <button id="deselect-all-words" class="secondary-button" type="button">Alle abwählen</button>
-              </div>
-              <div class="word-picker-list" id="word-picker-list"></div>
             </div>
           </div>
         </div>

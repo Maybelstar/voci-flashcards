@@ -142,18 +142,31 @@ h1 {
 }
 
 .word-picker {
-  padding: 14px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(87, 104, 146, 0.14);
 }
 
-.word-picker-header {
+.word-picker-toggle {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 14px;
-  align-items: baseline;
+  align-items: center;
+  width: 100%;
+  padding: 12px 14px;
+  background: transparent;
+  color: var(--text-main);
+  box-shadow: none;
+  border-radius: 18px;
+}
+
+.word-picker-toggle:hover,
+.word-picker-toggle:focus-visible {
+  box-shadow: none;
+  transform: none;
+  filter: none;
+  background: rgba(255, 255, 255, 0.38);
 }
 
 .word-picker-count {
@@ -162,11 +175,15 @@ h1 {
   color: var(--text-soft);
 }
 
+.word-picker-panel {
+  padding: 0 14px 14px;
+}
+
 .word-picker-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 2px;
 }
 
 .word-picker-actions button {
@@ -192,6 +209,10 @@ h1 {
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(87, 104, 146, 0.1);
+}
+
+.word-option:hover {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .word-option input {

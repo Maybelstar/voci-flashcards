@@ -44,9 +44,12 @@ const elements = {
   listSelect: document.querySelector("#list-select"),
   repeatCount: document.querySelector("#repeat-count"),
   wordPickerCount: document.querySelector("#word-picker-count"),
+  wordPickerToggle: document.querySelector("#word-picker-toggle"),
+  wordPickerPanel: document.querySelector("#word-picker-panel"),
   wordPickerList: document.querySelector("#word-picker-list"),
   selectAllWords: document.querySelector("#select-all-words"),
   deselectAllWords: document.querySelector("#deselect-all-words"),
+  closeWordPicker: document.querySelector("#close-word-picker"),
   completeMessage: document.querySelector("#complete-message"),
   difficultSummary: document.querySelector("#difficult-summary"),
   difficultList: document.querySelector("#difficult-list"),
@@ -232,7 +235,12 @@ function showCompletion() {
   renderCompletionState();
 }
 
-function presentCard(card) {
+function setWordPickerOpen(isOpen) {
+  elements.wordPickerPanel.classList.toggle("hidden", !isOpen);
+  elements.wordPickerToggle.setAttribute("aria-expanded", String(isOpen));
+}
+
+function presentCard(card, shouldFocus = true) {
   clearAdvanceTimer();
   state.currentCard = card;
   state.currentMode = "answering";
@@ -247,10 +255,12 @@ function presentCard(card) {
   setFeedback("");
   updateProgress();
   showGame();
-  focusInput();
+  if (shouldFocus) {
+    focusInput();
+  }
 }
 
-function moveToNextCard() {
+function moveToNextCard(shouldFocus = true) {
   const nextCard = state.cardQueue.shift() || null;
 
   if (!nextCard) {
@@ -258,10 +268,11 @@ function moveToNextCard() {
     return;
   }
 
-  presentCard(nextCard);
+  presentCard(nextCard, shouldFocus);
 }
 
-function startGame(cards = getPlayableCards()) {
+function startGame(cards = getPlayableCards(), options = {}) {
+  const { shouldFocus = true } = options;
   clearAdvanceTimer();
   if (cards.length === 0) {
     state.activeCards = [];
@@ -280,7 +291,7 @@ function startGame(cards = getPlayableCards()) {
   });
 
   state.cardQueue = buildQueue(state.activeCards);
-  moveToNextCard();
+  moveToNextCard(shouldFocus);
 }
 
 function handleCorrectAnswer() {
@@ -395,7 +406,7 @@ function renderWordPicker() {
       }
 
       updateWordPickerCount();
-      startGame();
+      startGame(undefined, { shouldFocus: false });
     });
 
     const text = document.createElement("span");
@@ -417,7 +428,7 @@ function setAllWordsSelected(selected) {
   }
 
   renderWordPicker();
-  startGame();
+  startGame(undefined, { shouldFocus: false });
 }
 
 function applyListSelection(listName) {
@@ -447,7 +458,7 @@ function applyListSelection(listName) {
   updateProgress();
 
   if (state.currentMode !== "loading" && state.currentMode !== "error") {
-    startGame();
+    startGame(undefined, { shouldFocus: false });
   }
 }
 
@@ -458,7 +469,7 @@ function applyRepeatCount(value) {
   elements.repeatCount.value = String(safeValue);
 
   if (state.cards.length > 0 && state.currentMode !== "loading" && state.currentMode !== "error") {
-    startGame();
+    startGame(undefined, { shouldFocus: false });
   }
 }
 
@@ -489,7 +500,7 @@ function renderLanguagePicker(languages) {
       state.currentLanguage = languageCode;
       renderLanguagePicker(languages);
       updateLanguageCopy();
-      startGame();
+      startGame(undefined, { shouldFocus: false });
     });
 
     elements.languageButtons.appendChild(button);
@@ -547,11 +558,18 @@ elements.repeatCount.addEventListener("blur", (event) => {
 elements.listSelect.addEventListener("change", (event) => {
   applyListSelection(event.target.value);
 });
+elements.wordPickerToggle.addEventListener("click", () => {
+  const isOpen = elements.wordPickerToggle.getAttribute("aria-expanded") === "true";
+  setWordPickerOpen(!isOpen);
+});
 elements.selectAllWords.addEventListener("click", () => {
   setAllWordsSelected(true);
 });
 elements.deselectAllWords.addEventListener("click", () => {
   setAllWordsSelected(false);
+});
+elements.closeWordPicker.addEventListener("click", () => {
+  setWordPickerOpen(false);
 });
 
 loadVocabulary();

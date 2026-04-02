@@ -1,5 +1,6 @@
 const ADVANCE_DELAY_MS = 700;
-const CUSTOM_LISTS_STORAGE_KEY = "voci-custom-lists-v1";
+const GOOGLE_SHEETS_ID = "1sSGVjswcMiSJN69X3x_667ctdY8qNmvlMBgnUWnanUk";
+const GOOGLE_SHEETS_EXPORT_URL = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_ID}/export?format=xlsx`;
 const GENERIC_QUESTION_HEADERS = ["fragen", "frage"];
 const GENERIC_ANSWER_HEADERS = ["antworten", "antwort"];
 const SUPPORTED_LANGUAGE_CODES = ["en", "fr"];
@@ -10,8 +11,6 @@ const LANGUAGE_LABELS = {
 };
 
 const state = {
-  defaultLists: [],
-  customLists: [],
   lists: [],
   cards: [],
   activeCards: [],
@@ -50,9 +49,6 @@ const elements = {
   languageButtons: document.querySelector("#language-buttons"),
   listSelect: document.querySelector("#list-select"),
   repeatCount: document.querySelector("#repeat-count"),
-  excelUpload: document.querySelector("#excel-upload"),
-  resetUploadedLists: document.querySelector("#reset-uploaded-lists"),
-  importStatus: document.querySelector("#import-status"),
   wordPickerCount: document.querySelector("#word-picker-count"),
   wordPickerToggle: document.querySelector("#word-picker-toggle"),
   wordPickerPanel: document.querySelector("#word-picker-panel"),
@@ -84,19 +80,6 @@ function isCorrectAnswer(input, english) {
 
 function getLanguageLabel(languageCode) {
   return LANGUAGE_LABELS[languageCode] || languageCode.toUpperCase();
-}
-
-function cloneList(list) {
-  return {
-    name: list.name,
-    languages: Array.isArray(list.languages) ? [...list.languages] : [],
-    items: Array.isArray(list.items)
-      ? list.items.map((item) => ({
-          german: item.german,
-          translations: { ...(item.translations || {}) },
-        }))
-      : [],
-  };
 }
 
 function normalizeListDefinition(list) {
@@ -142,59 +125,7 @@ function normalizeListDefinition(list) {
   };
 }
 
-function mergeLists(defaultLists, customLists) {
-  const mergedLists = defaultLists.map(cloneList);
-  const indexByName = new Map(mergedLists.map((list, index) => [list.name, index]));
-
-  customLists.forEach((list) => {
-    const normalized = normalizeListDefinition(list);
-    if (!normalized) {
-      return;
-    }
-
-    const existingIndex = indexByName.get(normalized.name);
-    if (existingIndex !== undefined) {
-      mergedLists[existingIndex] = normalized;
-      return;
-    }
-
-    indexByName.set(normalized.name, mergedLists.length);
-    mergedLists.push(normalized);
-  });
-
-  return mergedLists;
-}
-
-function loadCustomLists() {
-  try {
-    const rawValue = window.localStorage.getItem(CUSTOM_LISTS_STORAGE_KEY);
-    if (!rawValue) {
-      return [];
-    }
-
-    const parsed = JSON.parse(rawValue);
-    const lists = Array.isArray(parsed?.lists) ? parsed.lists : [];
-    return lists.map(normalizeListDefinition).filter(Boolean);
-  } catch (error) {
-    console.warn("Unable to read custom lists from local storage.", error);
-    return [];
-  }
-}
-
-function saveCustomLists() {
-  try {
-    window.localStorage.setItem(
-      CUSTOM_LISTS_STORAGE_KEY,
-      JSON.stringify({ lists: state.customLists.map(cloneList) })
-    );
-  } catch (error) {
-    console.warn("Unable to save custom lists to local storage.", error);
-  }
-}
-
 function syncLists(preferredListName = state.currentListName) {
-  state.lists = mergeLists(state.defaultLists, state.customLists);
-
   elements.listSelect.innerHTML = "";
   state.lists.forEach((list) => {
     const option = document.createElement("option");
@@ -216,28 +147,6 @@ function syncLists(preferredListName = state.currentListName) {
     : state.lists[0].name;
 
   applyListSelection(nextListName);
-}
-
-function setImportStatus(message, type = "") {
-  elements.importStatus.textContent = message;
-  elements.importStatus.className = "import-note";
-
-  if (type) {
-    elements.importStatus.classList.add(type);
-  }
-}
-
-function updateCustomListControls() {
-  const customListCount = state.customLists.length;
-  elements.resetUploadedLists.disabled = customListCount === 0;
-
-  if (customListCount === 0) {
-    setImportStatus("Hochgeladene Listen bleiben in diesem Browser gespeichert und ergänzen deine Standardlisten.");
-    return;
-  }
-
-  const listText = customListCount === 1 ? "hochgeladene Liste ist" : "hochgeladene Listen sind";
-  setImportStatus(`${customListCount} ${listText} in diesem Browser gespeichert und werden mit deinen Standardlisten zusammen verwendet.`, "is-success");
 }
 
 function parseSheetRows(rows, sheetName) {
@@ -336,79 +245,27 @@ function parseSheetRows(rows, sheetName) {
   };
 }
 
-function parseWorkbookFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      try {
-        if (!window.XLSX) {
-          throw new Error("Die Excel-Bibliothek konnte nicht geladen werden.");
-        }
-
-        const workbook = window.XLSX.read(event.target?.result, { type: "array" });
-        const parsedLists = workbook.SheetNames.map((sheetName) => {
-          const sheet = workbook.Sheets[sheetName];
-          const rows = window.XLSX.utils.sheet_to_json(sheet, {
-            header: 1,
-            defval: "",
-            raw: false,
-          });
-          return parseSheetRows(rows, sheetName);
-        }).filter(Boolean);
-
-        if (parsedLists.length === 0) {
-          throw new Error("In dieser Excel-Datei wurden keine verwendbaren Listen gefunden.");
-        }
-
-        resolve(parsedLists);
-      } catch (error) {
-        reject(error);
-      }
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Die Excel-Datei konnte nicht gelesen werden."));
-    };
-
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-async function importWorkbook(file) {
-  if (!file) {
-    return;
+function parseWorkbookData(data) {
+  if (!window.XLSX) {
+    throw new Error("Die Tabellen-Bibliothek konnte nicht geladen werden.");
   }
 
-  setImportStatus("Die Excel-Datei wird importiert ...");
-
-  try {
-    const importedLists = await parseWorkbookFile(file);
-    const customListMap = new Map(state.customLists.map((list) => [list.name, cloneList(list)]));
-
-    importedLists.forEach((list) => {
-      customListMap.set(list.name, cloneList(list));
+  const workbook = window.XLSX.read(data, { type: "array" });
+  const parsedLists = workbook.SheetNames.map((sheetName) => {
+    const sheet = workbook.Sheets[sheetName];
+    const rows = window.XLSX.utils.sheet_to_json(sheet, {
+      header: 1,
+      defval: "",
+      raw: false,
     });
+    return parseSheetRows(rows, sheetName);
+  }).filter(Boolean);
 
-    state.customLists = Array.from(customListMap.values());
-    saveCustomLists();
-    syncLists(importedLists[0].name);
-    updateCustomListControls();
-
-    const importedCount = importedLists.length;
-    const listText = importedCount === 1 ? "Liste" : "Listen";
-    setImportStatus(
-      `${importedCount} ${listText} wurden importiert. Gleichnamige Listen wurden ersetzt und neue ergänzt.`,
-      "is-success"
-    );
-  } catch (error) {
-    setImportStatus(
-      error instanceof Error ? error.message : "Die Excel-Datei konnte nicht importiert werden.",
-      "is-error"
-    );
-  } finally {
-    elements.excelUpload.value = "";
+  if (parsedLists.length === 0) {
+    throw new Error("Im Google Sheet wurden keine verwendbaren Listen gefunden.");
   }
+
+  return parsedLists.map(normalizeListDefinition).filter(Boolean);
 }
 
 function getCurrentTranslation(card) {
@@ -894,28 +751,25 @@ function renderLanguagePicker(languages) {
 
 async function loadVocabulary() {
   try {
-    const response = await fetch("./vocabulary.json");
-    const payload = await response.json();
-
+    const response = await fetch(GOOGLE_SHEETS_EXPORT_URL);
     if (!response.ok) {
-      throw new Error(payload.error || "Failed to load vocabulary.");
+      throw new Error("Das Google Sheet konnte nicht geladen werden.");
     }
 
-    const lists = Array.isArray(payload.lists) ? payload.lists : [];
+    const workbookData = await response.arrayBuffer();
+    const lists = parseWorkbookData(workbookData);
 
     if (lists.length === 0) {
-      throw new Error("In der Datei vocabulary.json wurden keine Listen gefunden.");
+      throw new Error("Im Google Sheet wurden keine Listen gefunden.");
     }
 
-    state.defaultLists = lists.map(cloneList);
-    state.customLists = loadCustomLists();
-    updateCustomListControls();
+    state.lists = lists;
     syncLists(state.currentListName || lists[0].name);
     startGame();
   } catch (error) {
     showError(
       error instanceof Error
-        ? `${error.message} Wenn du voci.xlsx geändert hast, führe vorher build_vocabulary.py aus.`
+        ? `${error.message} Prüfe bitte, ob das Google Sheet öffentlich freigegeben ist.`
         : "Die Fragen konnten nicht geladen werden."
     );
   }
@@ -933,22 +787,6 @@ elements.repeatCount.addEventListener("change", (event) => {
 });
 elements.repeatCount.addEventListener("blur", (event) => {
   applyRepeatCount(event.target.value);
-});
-elements.excelUpload.addEventListener("change", (event) => {
-  importWorkbook(event.target.files?.[0]);
-});
-elements.resetUploadedLists.addEventListener("click", () => {
-  state.customLists = [];
-  try {
-    window.localStorage.removeItem(CUSTOM_LISTS_STORAGE_KEY);
-  } catch (error) {
-    console.warn("Unable to clear custom lists from local storage.", error);
-  }
-  syncLists(state.defaultLists[0]?.name || "");
-  setImportStatus("Die hochgeladenen Listen wurden entfernt. Jetzt werden wieder nur die Standardlisten verwendet.", "is-success");
-  window.setTimeout(() => {
-    updateCustomListControls();
-  }, 1600);
 });
 elements.listSelect.addEventListener("change", (event) => {
   applyListSelection(event.target.value);

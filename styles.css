@@ -94,7 +94,12 @@ h1 {
 
 .settings-panel {
   margin-top: 18px;
-  max-width: 320px;
+  display: grid;
+  gap: 14px;
+}
+
+.settings-field {
+  min-width: 0;
 }
 
 .settings-label {
@@ -122,6 +127,14 @@ h1 {
   border-color: rgba(76, 178, 184, 0.8);
   box-shadow: 0 0 0 5px rgba(76, 178, 184, 0.16);
   transform: translateY(-1px);
+}
+
+@media (min-width: 700px) {
+  .settings-panel {
+    grid-template-columns: minmax(0, 1.6fr) minmax(180px, 0.9fr);
+    align-items: end;
+    max-width: 760px;
+  }
 }
 
 .game-card {

@@ -15,6 +15,7 @@ const state = {
   currentMode: "loading",
   currentAttemptHadMistake: false,
   difficultCardIds: new Set(),
+  selectedCardIds: new Set(),
   advanceTimerId: null,
   repeatCount: 5,
 };
@@ -23,6 +24,7 @@ const elements = {
   loadingState: document.querySelector("#loading-state"),
   errorState: document.querySelector("#error-state"),
   errorMessage: document.querySelector("#error-message"),
+  selectionState: document.querySelector("#selection-state"),
   gameState: document.querySelector("#game-state"),
   completeState: document.querySelector("#complete-state"),
   overallProgress: document.querySelector("#overall-progress"),
@@ -41,6 +43,10 @@ const elements = {
   languageButtons: document.querySelector("#language-buttons"),
   listSelect: document.querySelector("#list-select"),
   repeatCount: document.querySelector("#repeat-count"),
+  wordPickerCount: document.querySelector("#word-picker-count"),
+  wordPickerList: document.querySelector("#word-picker-list"),
+  selectAllWords: document.querySelector("#select-all-words"),
+  deselectAllWords: document.querySelector("#deselect-all-words"),
   completeMessage: document.querySelector("#complete-message"),
   difficultSummary: document.querySelector("#difficult-summary"),
   difficultList: document.querySelector("#difficult-list"),
@@ -90,7 +96,9 @@ function shuffleCards(items) {
 }
 
 function getPlayableCards() {
-  return state.cards.filter((card) => getCurrentTranslation(card));
+  return state.cards.filter(
+    (card) => state.selectedCardIds.has(card.id) && getCurrentTranslation(card)
+  );
 }
 
 function getCurrentList() {
@@ -164,8 +172,21 @@ function focusInput() {
 function showGame() {
   elements.loadingState.classList.add("hidden");
   elements.errorState.classList.add("hidden");
+  elements.selectionState.classList.add("hidden");
   elements.completeState.classList.add("hidden");
   elements.gameState.classList.remove("hidden");
+}
+
+function showSelectionState() {
+  clearAdvanceTimer();
+  state.currentMode = "selection";
+  state.currentCard = null;
+  elements.loadingState.classList.add("hidden");
+  elements.errorState.classList.add("hidden");
+  elements.completeState.classList.add("hidden");
+  elements.gameState.classList.add("hidden");
+  elements.selectionState.classList.remove("hidden");
+  updateProgress();
 }
 
 function renderCompletionState() {
@@ -204,6 +225,7 @@ function showCompletion() {
   state.currentMode = "complete";
   state.currentCard = null;
   elements.gameState.classList.add("hidden");
+  elements.selectionState.classList.add("hidden");
   elements.completeState.classList.remove("hidden");
   setFeedback("");
   updateProgress();
@@ -241,6 +263,13 @@ function moveToNextCard() {
 
 function startGame(cards = getPlayableCards()) {
   clearAdvanceTimer();
+  if (cards.length === 0) {
+    state.activeCards = [];
+    state.cardQueue = [];
+    showSelectionState();
+    return;
+  }
+
   state.activeCards = [...cards];
   state.currentCard = null;
   state.currentAttemptHadMistake = false;
@@ -331,6 +360,7 @@ function showError(message) {
   state.currentMode = "error";
   elements.loadingState.classList.add("hidden");
   elements.gameState.classList.add("hidden");
+  elements.selectionState.classList.add("hidden");
   elements.completeState.classList.add("hidden");
   elements.errorState.classList.remove("hidden");
   elements.errorMessage.textContent = message;
@@ -339,6 +369,55 @@ function showError(message) {
 function updateLanguageCopy() {
   elements.promptLabel.textContent = "Was ist die Antwort?";
   elements.answerLabel.textContent = "Deine Antwort";
+}
+
+function updateWordPickerCount() {
+  const total = state.cards.length;
+  const selected = state.selectedCardIds.size;
+  elements.wordPickerCount.textContent = `${selected} von ${total} ausgewählt`;
+}
+
+function renderWordPicker() {
+  elements.wordPickerList.innerHTML = "";
+
+  state.cards.forEach((card) => {
+    const label = document.createElement("label");
+    label.className = "word-option";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = state.selectedCardIds.has(card.id);
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        state.selectedCardIds.add(card.id);
+      } else {
+        state.selectedCardIds.delete(card.id);
+      }
+
+      updateWordPickerCount();
+      startGame();
+    });
+
+    const text = document.createElement("span");
+    text.textContent = card.german;
+
+    label.appendChild(checkbox);
+    label.appendChild(text);
+    elements.wordPickerList.appendChild(label);
+  });
+
+  updateWordPickerCount();
+}
+
+function setAllWordsSelected(selected) {
+  if (selected) {
+    state.selectedCardIds = new Set(state.cards.map((card) => card.id));
+  } else {
+    state.selectedCardIds = new Set();
+  }
+
+  renderWordPicker();
+  startGame();
 }
 
 function applyListSelection(listName) {
@@ -358,11 +437,13 @@ function applyListSelection(listName) {
     translations: item.translations || {},
     correctCount: 0,
   }));
+  state.selectedCardIds = new Set(state.cards.map((card) => card.id));
 
   const availableLanguages = selectedList.languages || ["en"];
   state.currentLanguage = availableLanguages.includes("en") ? "en" : availableLanguages[0];
   renderLanguagePicker(availableLanguages);
   updateLanguageCopy();
+  renderWordPicker();
   updateProgress();
 
   if (state.currentMode !== "loading" && state.currentMode !== "error") {
@@ -465,6 +546,12 @@ elements.repeatCount.addEventListener("blur", (event) => {
 });
 elements.listSelect.addEventListener("change", (event) => {
   applyListSelection(event.target.value);
+});
+elements.selectAllWords.addEventListener("click", () => {
+  setAllWordsSelected(true);
+});
+elements.deselectAllWords.addEventListener("click", () => {
+  setAllWordsSelected(false);
 });
 
 loadVocabulary();

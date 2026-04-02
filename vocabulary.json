@@ -1,35 +1,11 @@
 {
   "lists": [
     {
-      "name": "Liste 1",
+      "name": "English",
       "languages": [
         "en"
       ],
       "items": [
-        {
-          "german": "ein",
-          "translations": {
-            "en": "one"
-          }
-        },
-        {
-          "german": "zwei",
-          "translations": {
-            "en": "two"
-          }
-        },
-        {
-          "german": "drei",
-          "translations": {
-            "en": "three"
-          }
-        },
-        {
-          "german": "vier",
-          "translations": {
-            "en": "four"
-          }
-        },
         {
           "german": "Haus",
           "translations": {
@@ -53,7 +29,15 @@
           "translations": {
             "en": "dog"
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "NMG",
+      "languages": [
+        "en"
+      ],
+      "items": [
         {
           "german": "Wie viele Kantone zählt die Schweiz?",
           "translations": {
@@ -63,7 +47,7 @@
       ]
     },
     {
-      "name": "Liste 2",
+      "name": "numbers ",
       "languages": [
         "en"
       ],
@@ -79,11 +63,35 @@
           "translations": {
             "en": "seven"
           }
+        },
+        {
+          "german": "ein",
+          "translations": {
+            "en": "one"
+          }
+        },
+        {
+          "german": "zwei",
+          "translations": {
+            "en": "two"
+          }
+        },
+        {
+          "german": "drei",
+          "translations": {
+            "en": "three"
+          }
+        },
+        {
+          "german": "vier",
+          "translations": {
+            "en": "four"
+          }
         }
       ]
     },
     {
-      "name": "Liste 3",
+      "name": "more numbers",
       "languages": [
         "en"
       ],

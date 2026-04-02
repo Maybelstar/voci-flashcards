@@ -9,7 +9,7 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v7</p>
+      <p class="version-badge">v8</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
@@ -23,6 +23,20 @@
           <div class="settings-field">
             <label class="settings-label" for="repeat-count">Wie oft soll jedes Wort drankommen?</label>
             <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="5" />
+          </div>
+
+          <div class="settings-field settings-field-wide">
+            <div class="word-picker" id="word-picker">
+              <div class="word-picker-header">
+                <label class="settings-label">Welche Wörter möchtest du üben?</label>
+                <p class="word-picker-count" id="word-picker-count">0 von 0 ausgewählt</p>
+              </div>
+              <div class="word-picker-actions">
+                <button id="select-all-words" class="secondary-button" type="button">Alle auswählen</button>
+                <button id="deselect-all-words" class="secondary-button" type="button">Alle abwählen</button>
+              </div>
+              <div class="word-picker-list" id="word-picker-list"></div>
+            </div>
           </div>
         </div>
       </section>
@@ -54,6 +68,10 @@
 
         <div id="error-state" class="message-panel hidden">
           <p id="error-message"></p>
+        </div>
+
+        <div id="selection-state" class="message-panel hidden">
+          <p>Wähle mindestens ein Wort aus, damit das Spiel starten kann.</p>
         </div>
 
         <div id="game-state" class="hidden">

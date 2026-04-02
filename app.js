@@ -526,17 +526,9 @@ function handleWrongAnswer(answer) {
   const wrapper = document.createElement("div");
   wrapper.className = "feedback-layout";
 
-  const leftColumn = document.createElement("div");
-  leftColumn.className = "feedback-column";
-
   const wrongTitle = document.createElement("p");
-  wrongTitle.className = "feedback-main";
+  wrongTitle.className = "feedback-main feedback-main-full";
   wrongTitle.textContent = 'Falsch. Drücke auf "Weiter", dann kannst du es noch einmal versuchen.';
-
-  leftColumn.appendChild(wrongTitle);
-
-  const rightColumn = document.createElement("div");
-  rightColumn.className = "feedback-column";
 
   const enteredLine = document.createElement("p");
   enteredLine.className = "feedback-detail feedback-detail-entered";
@@ -560,11 +552,9 @@ function handleWrongAnswer(answer) {
   correctLine.appendChild(correctLabel);
   correctLine.appendChild(correctValue);
 
-  rightColumn.appendChild(enteredLine);
-  rightColumn.appendChild(correctLine);
-
-  wrapper.appendChild(leftColumn);
-  wrapper.appendChild(rightColumn);
+  wrapper.appendChild(wrongTitle);
+  wrapper.appendChild(enteredLine);
+  wrapper.appendChild(correctLine);
   setFeedbackNode(wrapper, "is-error");
   focusInput();
 }

@@ -2,16 +2,10 @@
 
 This project is ready to publish on GitHub Pages as a static website.
 
-## Update the vocabulary list
+## Update the lists
 
-1. Replace or edit `voci.xlsx`.
-2. Run:
-
-```bash
-python3 build_vocabulary.py
-```
-
-This refreshes `vocabulary.json`, which is the file the website reads on GitHub Pages.
+The website reads its lists directly from the shared Google Sheet.
+Use the `Listen aktualisieren` link on the page to open and edit it.
 
 ## Preview locally
 
@@ -24,4 +18,4 @@ Then open <http://127.0.0.1:8000>.
 ## Publish to GitHub Pages
 
 Push these files to a GitHub repository and enable GitHub Pages for the branch.
-The site will serve `index.html` and load `vocabulary.json` automatically.
+The site will serve `index.html` and load the lists from Google Sheets automatically.

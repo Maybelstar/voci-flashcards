@@ -505,19 +505,19 @@ button:disabled {
 
 .feedback-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 18px;
   align-items: start;
-}
-
-.feedback-column {
-  min-width: 0;
 }
 
 .feedback-main,
 .feedback-sub,
 .feedback-detail {
   margin: 0;
+}
+
+.feedback-main-full {
+  grid-column: 1 / -1;
 }
 
 .feedback-detail + .feedback-detail {
@@ -542,12 +542,12 @@ button:disabled {
 
 .feedback-key {
   color: var(--text-main);
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .feedback-value {
   color: var(--text-main);
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .feedback.is-success {

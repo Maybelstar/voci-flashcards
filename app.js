@@ -213,13 +213,15 @@ function handleCorrectAnswer() {
   }, ADVANCE_DELAY_MS);
 }
 
-function handleWrongAnswer() {
+function handleWrongAnswer(answer) {
   state.currentMode = "wrong-feedback";
+  const enteredAnswer = answer.trim();
+  const correctAnswer = getCurrentTranslation(state.currentCard);
   elements.answerInput.value = "";
   elements.answerInput.readOnly = true;
   elements.submitButton.textContent = "Weiter";
   setFeedback(
-    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Drücke auf "Weiter", dann kannst du es noch einmal versuchen.`,
+    `Falsch.\nDeine Eingabe: "${enteredAnswer}"\nRichtige Antwort: "${correctAnswer}"\nDrücke auf "Weiter", dann kannst du es noch einmal versuchen.`,
     "is-error"
   );
   focusInput();
@@ -261,7 +263,7 @@ function handleSubmit(event) {
     return;
   }
 
-  handleWrongAnswer();
+  handleWrongAnswer(answer);
 }
 
 function showError(message) {

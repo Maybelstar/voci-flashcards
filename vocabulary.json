@@ -32,6 +32,30 @@
       "translations": {
         "en": "house"
       }
+    },
+    {
+      "german": "Maus",
+      "translations": {
+        "en": "mouse"
+      }
+    },
+    {
+      "german": "Katze",
+      "translations": {
+        "en": "cat"
+      }
+    },
+    {
+      "german": "Hund",
+      "translations": {
+        "en": "dog"
+      }
+    },
+    {
+      "german": "Wie viele Kantone zählt die Schweiz?",
+      "translations": {
+        "en": "26"
+      }
     }
   ]
 }

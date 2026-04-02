@@ -10,7 +10,7 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v14</p>
+      <p class="version-badge">v15</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
@@ -19,22 +19,19 @@
           <div class="settings-field">
             <label class="settings-label" for="list-select">Welche Liste möchtest du üben?</label>
             <select id="list-select" class="settings-input"></select>
-          </div>
-
-          <div class="settings-field">
-            <label class="settings-label" for="repeat-count">Wie oft soll jede Frage drankommen?</label>
-            <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="1" />
-          </div>
-
-          <div class="settings-field settings-field-wide">
             <a
-              class="secondary-button sheet-link-button"
+              class="sheet-link-button"
               href="https://docs.google.com/spreadsheets/d/1sSGVjswcMiSJN69X3x_667ctdY8qNmvlMBgnUWnanUk/edit?gid=1309842811#gid=1309842811"
               target="_blank"
               rel="noreferrer"
             >
               Google Sheet öffnen
             </a>
+          </div>
+
+          <div class="settings-field">
+            <label class="settings-label" for="repeat-count">Wie oft soll jede Frage drankommen?</label>
+            <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="1" />
           </div>
 
           <div class="settings-field settings-field-wide">
@@ -45,8 +42,8 @@
               </button>
               <div class="word-picker-panel hidden" id="word-picker-panel">
                 <div class="word-picker-actions">
-                  <button id="select-all-words" class="secondary-button" type="button">Alle auswählen</button>
-                  <button id="deselect-all-words" class="secondary-button" type="button">Alle abwählen</button>
+                  <button id="select-all-words" class="picker-action-button" type="button">Alle auswählen</button>
+                  <button id="deselect-all-words" class="picker-action-button" type="button">Alle abwählen</button>
                   <button id="close-word-picker" class="secondary-button word-picker-done" type="button">Fertig</button>
                 </div>
                 <div class="word-picker-list" id="word-picker-list"></div>

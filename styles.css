@@ -102,6 +102,10 @@ h1 {
   min-width: 0;
 }
 
+.settings-field > .sheet-link-button {
+  margin-top: 8px;
+}
+
 .settings-field-wide {
   grid-column: 1 / -1;
 }
@@ -192,6 +196,19 @@ h1 {
   font-size: 0.84rem;
 }
 
+.picker-action-button {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text-main);
+  border: 1px solid rgba(87, 104, 146, 0.2);
+  box-shadow: 0 8px 18px rgba(53, 77, 117, 0.1);
+}
+
+.picker-action-button:hover,
+.picker-action-button:focus-visible {
+  box-shadow: 0 10px 20px rgba(53, 77, 117, 0.14);
+  filter: none;
+}
+
 .word-picker-actions .word-picker-done {
   background: linear-gradient(135deg, #1f4f8a, #163964);
   box-shadow: 0 10px 20px rgba(31, 79, 138, 0.24);
@@ -214,7 +231,7 @@ h1 {
 
 .word-option {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   padding: 7px 9px;
   border-radius: 12px;
@@ -227,12 +244,23 @@ h1 {
 }
 
 .word-option input {
-  margin: 0;
+  margin: 3px 0 0;
 }
 
-.word-option span {
+.word-option-text {
+  display: grid;
+  gap: 2px;
+}
+
+.word-option-question {
   font-size: 0.9rem;
+  font-weight: 700;
   color: var(--text-main);
+}
+
+.word-option-answer {
+  font-size: 0.83rem;
+  color: var(--text-soft);
 }
 
 .game-card {
@@ -425,6 +453,18 @@ button {
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #235f4d, #173f34);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgba(35, 95, 77, 0.22);
+}
+
+.sheet-link-button:hover,
+.sheet-link-button:focus-visible {
+  box-shadow: 0 16px 28px rgba(35, 95, 77, 0.28);
+  filter: saturate(1.04);
 }
 
 button:hover,

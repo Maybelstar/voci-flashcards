@@ -630,6 +630,15 @@ function updateWordPickerCount() {
   elements.wordPickerCount.textContent = `${selected} von ${total} ausgewählt`;
 }
 
+function getCardAnswerPreview(card) {
+  if (card.translations[state.currentLanguage]) {
+    return card.translations[state.currentLanguage];
+  }
+
+  const firstTranslation = Object.values(card.translations || {}).find(Boolean);
+  return firstTranslation || "";
+}
+
 function renderWordPicker() {
   elements.wordPickerList.innerHTML = "";
 
@@ -651,11 +660,22 @@ function renderWordPicker() {
       startGame(undefined, { shouldFocus: false });
     });
 
-    const text = document.createElement("span");
-    text.textContent = card.german;
+    const textWrap = document.createElement("span");
+    textWrap.className = "word-option-text";
+
+    const questionText = document.createElement("span");
+    questionText.className = "word-option-question";
+    questionText.textContent = card.german;
+
+    const answerText = document.createElement("span");
+    answerText.className = "word-option-answer";
+    answerText.textContent = getCardAnswerPreview(card);
+
+    textWrap.appendChild(questionText);
+    textWrap.appendChild(answerText);
 
     label.appendChild(checkbox);
-    label.appendChild(text);
+    label.appendChild(textWrap);
     elements.wordPickerList.appendChild(label);
   });
 
@@ -742,6 +762,7 @@ function renderLanguagePicker(languages) {
       state.currentLanguage = languageCode;
       renderLanguagePicker(languages);
       updateLanguageCopy();
+      renderWordPicker();
       startGame(undefined, { shouldFocus: false });
     });
 

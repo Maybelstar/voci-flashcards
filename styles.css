@@ -71,14 +71,14 @@ body::after {
   margin: 0;
   padding: 6px 11px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.84);
-  border: 1px solid rgba(87, 104, 146, 0.18);
-  color: var(--accent-deep);
-  font-size: 0.72rem;
-  font-weight: 800;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(87, 104, 146, 0.1);
+  color: var(--text-soft);
+  font-size: 0.66rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: 0 12px 24px rgba(53, 77, 117, 0.12);
+  box-shadow: 0 6px 14px rgba(53, 77, 117, 0.08);
 }
 
 .hero-panel {
@@ -506,7 +506,8 @@ button:disabled {
 .feedback-layout {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 18px;
+  column-gap: 18px;
+  row-gap: 10px;
   align-items: start;
 }
 
@@ -518,10 +519,6 @@ button:disabled {
 
 .feedback-main-full {
   grid-column: 1 / -1;
-}
-
-.feedback-detail + .feedback-detail {
-  margin-top: 8px;
 }
 
 .feedback-detail {
@@ -542,12 +539,12 @@ button:disabled {
 
 .feedback-key {
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .feedback-value {
   color: var(--text-main);
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .feedback.is-success {

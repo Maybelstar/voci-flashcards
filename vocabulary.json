@@ -47,13 +47,13 @@
         {
           "german": "Der grösste See der Schwiez?",
           "translations": {
-            "answer": "Lac de Néchatel"
+            "answer": "Lac de Neuchâtel"
           }
         },
         {
           "german": "Der tiefste Punkt der Schwiez?",
           "translations": {
-            "answer": "Lago Maggiore, 193M.ü.M"
+            "answer": "Lago Maggiore"
           }
         }
       ]

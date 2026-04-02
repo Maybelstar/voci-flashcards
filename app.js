@@ -57,12 +57,12 @@ const elements = {
 };
 
 function normalizeAnswer(value) {
-  return value.trim().replace(/\s+/g, " ");
+  return value.trim().replace(/\s+/g, " ").normalize("NFC");
 }
 
 function getAcceptedAnswers(english) {
   return english
-    .split(/\s*(?:\/|;|,|\n|\bor\b)\s*/i)
+    .split(/\s*(?:\/|;|\n|\bor\b)\s*/i)
     .map((variant) => normalizeAnswer(variant))
     .filter(Boolean);
 }
@@ -143,12 +143,22 @@ function buildQueue(cards) {
 }
 
 function setFeedback(message, type = "") {
+  elements.feedbackText.innerHTML = "";
   elements.feedbackText.textContent = message;
   elements.feedbackText.className = "feedback";
 
   if (type) {
     elements.feedbackText.classList.add(type);
   }
+}
+
+function setFeedbackNode(node, type = "") {
+  elements.feedbackText.innerHTML = "";
+  elements.feedbackText.className = "feedback";
+  if (type) {
+    elements.feedbackText.classList.add(type);
+  }
+  elements.feedbackText.appendChild(node);
 }
 
 function updateProgress() {
@@ -320,10 +330,55 @@ function handleWrongAnswer(answer) {
   elements.answerInput.value = "";
   elements.answerInput.readOnly = true;
   elements.submitButton.textContent = "Weiter";
-  setFeedback(
-    `Falsch.\nDeine Eingabe: "${enteredAnswer}"\nRichtige Antwort: "${correctAnswer}"\nDrücke auf "Weiter", dann kannst du es noch einmal versuchen.`,
-    "is-error"
-  );
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "feedback-layout";
+
+  const leftColumn = document.createElement("div");
+  leftColumn.className = "feedback-column";
+
+  const wrongTitle = document.createElement("p");
+  wrongTitle.className = "feedback-main";
+  wrongTitle.textContent = "Falsch.";
+
+  const wrongHint = document.createElement("p");
+  wrongHint.className = "feedback-sub";
+  wrongHint.textContent = 'Drücke auf "Weiter", dann kannst du es noch einmal versuchen.';
+
+  leftColumn.appendChild(wrongTitle);
+  leftColumn.appendChild(wrongHint);
+
+  const rightColumn = document.createElement("div");
+  rightColumn.className = "feedback-column";
+
+  const enteredLine = document.createElement("p");
+  enteredLine.className = "feedback-detail";
+  const enteredLabel = document.createElement("span");
+  enteredLabel.className = "feedback-key";
+  enteredLabel.textContent = "Deine Eingabe: ";
+  const enteredValue = document.createElement("span");
+  enteredValue.className = "feedback-value";
+  enteredValue.textContent = `"${enteredAnswer}"`;
+  enteredLine.appendChild(enteredLabel);
+  enteredLine.appendChild(enteredValue);
+
+  const correctLine = document.createElement("p");
+  correctLine.className = "feedback-detail";
+  const correctLabel = document.createElement("span");
+  correctLabel.className = "feedback-key";
+  correctLabel.textContent = "Richtige Antwort: ";
+  const correctValue = document.createElement("span");
+  correctValue.className = "feedback-value";
+  correctValue.textContent = `"${correctAnswer}"`;
+  correctLine.appendChild(correctLabel);
+  correctLine.appendChild(correctValue);
+
+  rightColumn.appendChild(enteredLine);
+  rightColumn.appendChild(correctLine);
+
+  wrapper.appendChild(leftColumn);
+  wrapper.appendChild(rightColumn);
+  setFeedbackNode(wrapper, "is-error");
   focusInput();
 }
 

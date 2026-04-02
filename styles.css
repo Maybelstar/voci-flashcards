@@ -193,13 +193,13 @@ h1 {
 }
 
 .word-picker-done {
-  background: linear-gradient(135deg, var(--success), #1b6f41);
-  box-shadow: 0 10px 20px rgba(36, 138, 82, 0.22);
+  background: linear-gradient(135deg, #1f4f8a, #163964);
+  box-shadow: 0 10px 20px rgba(31, 79, 138, 0.24);
 }
 
 .word-picker-done:hover,
 .word-picker-done:focus-visible {
-  box-shadow: 0 14px 24px rgba(36, 138, 82, 0.28);
+  box-shadow: 0 14px 24px rgba(31, 79, 138, 0.3);
 }
 
 .word-picker-list {
@@ -438,6 +438,44 @@ button:focus-visible {
   line-height: 1.35;
   font-weight: 700;
   white-space: pre-line;
+}
+
+.feedback-layout {
+  display: grid;
+  gap: 12px 18px;
+  align-items: start;
+}
+
+.feedback-column {
+  min-width: 0;
+}
+
+.feedback-main,
+.feedback-sub,
+.feedback-detail {
+  margin: 0;
+}
+
+.feedback-sub {
+  margin-top: 4px;
+}
+
+.feedback-detail + .feedback-detail {
+  margin-top: 8px;
+}
+
+.feedback-key {
+  color: var(--accent-cool);
+}
+
+.feedback-value {
+  color: var(--accent-deep);
+}
+
+@media (min-width: 700px) {
+  .feedback-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  }
 }
 
 .feedback.is-success {

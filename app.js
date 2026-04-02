@@ -6,10 +6,13 @@ const LANGUAGE_LABELS = {
 
 const state = {
   cards: [],
+  activeCards: [],
   cardQueue: [],
   currentCard: null,
   currentLanguage: "en",
   currentMode: "loading",
+  currentAttemptHadMistake: false,
+  difficultCardIds: new Set(),
   advanceTimerId: null,
   repeatCount: 5,
 };
@@ -35,6 +38,10 @@ const elements = {
   languagePicker: document.querySelector("#language-picker"),
   languageButtons: document.querySelector("#language-buttons"),
   repeatCount: document.querySelector("#repeat-count"),
+  completeMessage: document.querySelector("#complete-message"),
+  difficultSummary: document.querySelector("#difficult-summary"),
+  difficultList: document.querySelector("#difficult-list"),
+  difficultButton: document.querySelector("#difficult-button"),
 };
 
 function normalizeAnswer(value) {
@@ -84,7 +91,11 @@ function getPlayableCards() {
 }
 
 function getMasteredCards() {
-  return getPlayableCards().filter((card) => card.correctCount >= state.repeatCount);
+  return state.activeCards.filter((card) => card.correctCount >= state.repeatCount);
+}
+
+function getDifficultCards() {
+  return state.activeCards.filter((card) => state.difficultCardIds.has(card.id));
 }
 
 function buildRound(cards, previousCardId = null) {
@@ -123,14 +134,13 @@ function setFeedback(message, type = "") {
 }
 
 function updateProgress() {
-  const playableCards = getPlayableCards();
-  const totalTarget = playableCards.length * state.repeatCount;
-  const totalWins = playableCards.reduce((sum, card) => sum + card.correctCount, 0);
+  const totalTarget = state.activeCards.length * state.repeatCount;
+  const totalWins = state.activeCards.reduce((sum, card) => sum + card.correctCount, 0);
   const mastered = getMasteredCards().length;
   const progressPercent = totalTarget === 0 ? 0 : (totalWins / totalTarget) * 100;
 
   elements.overallProgress.textContent = `${totalWins} / ${totalTarget}`;
-  elements.masteredProgress.textContent = `${mastered} / ${playableCards.length}`;
+  elements.masteredProgress.textContent = `${mastered} / ${state.activeCards.length}`;
   elements.progressFill.style.width = `${progressPercent}%`;
 
   if (state.currentCard) {
@@ -151,6 +161,37 @@ function showGame() {
   elements.gameState.classList.remove("hidden");
 }
 
+function renderCompletionState() {
+  const difficultCards = getDifficultCards();
+  const repeatText = state.repeatCount === 1 ? "1 Mal" : `${state.repeatCount} Mal`;
+
+  elements.completeMessage.textContent = `Du hast alle Wörter ${repeatText} richtig beantwortet.`;
+
+  if (difficultCards.length === 0) {
+    elements.difficultSummary.textContent = "Super! Alle Wörter waren immer sofort richtig.";
+    elements.difficultList.innerHTML = "";
+    elements.difficultList.classList.add("hidden");
+    elements.difficultButton.classList.add("hidden");
+    return;
+  }
+
+  if (difficultCards.length === 1) {
+    elements.difficultSummary.textContent = "1 schwieriges Wort war nicht gleich beim ersten Versuch richtig.";
+  } else {
+    elements.difficultSummary.textContent = `${difficultCards.length} schwierige Wörter waren nicht gleich beim ersten Versuch richtig.`;
+  }
+  elements.difficultList.innerHTML = "";
+
+  difficultCards.forEach((card) => {
+    const item = document.createElement("li");
+    item.textContent = card.german;
+    elements.difficultList.appendChild(item);
+  });
+
+  elements.difficultList.classList.remove("hidden");
+  elements.difficultButton.classList.remove("hidden");
+}
+
 function showCompletion() {
   clearAdvanceTimer();
   state.currentMode = "complete";
@@ -159,12 +200,14 @@ function showCompletion() {
   elements.completeState.classList.remove("hidden");
   setFeedback("");
   updateProgress();
+  renderCompletionState();
 }
 
 function presentCard(card) {
   clearAdvanceTimer();
   state.currentCard = card;
   state.currentMode = "answering";
+  state.currentAttemptHadMistake = false;
 
   elements.germanWord.textContent = card.german;
   elements.answerInput.value = "";
@@ -189,12 +232,18 @@ function moveToNextCard() {
   presentCard(nextCard);
 }
 
-function startGame() {
+function startGame(cards = getPlayableCards()) {
   clearAdvanceTimer();
-  state.cards.forEach((card) => {
+  state.activeCards = [...cards];
+  state.currentCard = null;
+  state.currentAttemptHadMistake = false;
+  state.difficultCardIds = new Set();
+
+  state.activeCards.forEach((card) => {
     card.correctCount = 0;
   });
-  state.cardQueue = buildQueue(getPlayableCards());
+
+  state.cardQueue = buildQueue(state.activeCards);
   moveToNextCard();
 }
 
@@ -215,6 +264,10 @@ function handleCorrectAnswer() {
 
 function handleWrongAnswer(answer) {
   state.currentMode = "wrong-feedback";
+  if (!state.currentAttemptHadMistake) {
+    state.currentAttemptHadMistake = true;
+    state.difficultCardIds.add(state.currentCard.id);
+  }
   const enteredAnswer = answer.trim();
   const correctAnswer = getCurrentTranslation(state.currentCard);
   elements.answerInput.value = "";
@@ -349,6 +402,7 @@ async function loadVocabulary() {
       correctCount: 0,
     }));
     state.currentLanguage = languages.includes("en") ? "en" : languages[0];
+    state.activeCards = getPlayableCards();
 
     renderLanguagePicker(languages);
     updateLanguageCopy();
@@ -365,6 +419,9 @@ async function loadVocabulary() {
 
 elements.answerForm.addEventListener("submit", handleSubmit);
 elements.restartButton.addEventListener("click", startGame);
+elements.difficultButton.addEventListener("click", () => {
+  startGame(getDifficultCards());
+});
 elements.repeatCount.addEventListener("change", (event) => {
   applyRepeatCount(event.target.value);
 });

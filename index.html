@@ -9,7 +9,7 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v4</p>
+      <p class="version-badge">v5</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
@@ -73,8 +73,13 @@
 
         <div id="complete-state" class="message-panel hidden">
           <p class="complete-title">Geschafft!</p>
-          <p>Du hast alle Wörter 5 Mal richtig beantwortet.</p>
-          <button id="restart-button" type="button">Noch einmal spielen</button>
+          <p id="complete-message">Du hast alle Wörter richtig beantwortet.</p>
+          <p id="difficult-summary"></p>
+          <ul class="difficult-list hidden" id="difficult-list"></ul>
+          <div class="complete-actions">
+            <button id="restart-button" type="button">Alle noch einmal</button>
+            <button id="difficult-button" class="secondary-button hidden" type="button">Nur schwierige Wörter üben</button>
+          </div>
         </div>
       </section>
     </main>

@@ -235,6 +235,11 @@ h1 {
   color: var(--text-soft);
 }
 
+.message-panel > * {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .prompt-label {
   margin: 14px 0 8px;
   font-size: 0.82rem;
@@ -338,6 +343,35 @@ button:focus-visible {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.8rem, 3vw, 2.8rem);
   color: var(--accent-deep);
+}
+
+.complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.secondary-button {
+  background: linear-gradient(135deg, var(--accent-cool), #2f8b91);
+  box-shadow: 0 12px 24px rgba(47, 139, 145, 0.22);
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  box-shadow: 0 16px 26px rgba(47, 139, 145, 0.28);
+}
+
+.difficult-list {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  text-align: left;
+  color: var(--text-main);
+}
+
+.difficult-list li + li {
+  margin-top: 4px;
 }
 
 @media (max-width: 640px) {

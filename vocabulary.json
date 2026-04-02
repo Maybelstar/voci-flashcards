@@ -3,31 +3,31 @@
     {
       "name": "English",
       "languages": [
-        "en"
+        "answer"
       ],
       "items": [
         {
           "german": "Haus",
           "translations": {
-            "en": "house"
+            "answer": "house"
           }
         },
         {
           "german": "Maus",
           "translations": {
-            "en": "mouse"
+            "answer": "mouse"
           }
         },
         {
           "german": "Katze",
           "translations": {
-            "en": "cat"
+            "answer": "cat"
           }
         },
         {
           "german": "Hund",
           "translations": {
-            "en": "dog"
+            "answer": "dog"
           }
         }
       ]
@@ -35,13 +35,25 @@
     {
       "name": "NMG",
       "languages": [
-        "en"
+        "answer"
       ],
       "items": [
         {
           "german": "Wie viele Kantone zählt die Schweiz?",
           "translations": {
-            "en": "26"
+            "answer": "26"
+          }
+        },
+        {
+          "german": "Der grösste See der Schwiez?",
+          "translations": {
+            "answer": "Lac de Néchatel"
+          }
+        },
+        {
+          "german": "Der tiefste Punkt der Schwiez?",
+          "translations": {
+            "answer": "Lago Maggiore, 193M.ü.M"
           }
         }
       ]
@@ -49,43 +61,43 @@
     {
       "name": "numbers ",
       "languages": [
-        "en"
+        "answer"
       ],
       "items": [
         {
           "german": "sechs",
           "translations": {
-            "en": "six"
+            "answer": "six"
           }
         },
         {
           "german": "sieben",
           "translations": {
-            "en": "seven"
+            "answer": "seven"
           }
         },
         {
           "german": "ein",
           "translations": {
-            "en": "one"
+            "answer": "one"
           }
         },
         {
           "german": "zwei",
           "translations": {
-            "en": "two"
+            "answer": "two"
           }
         },
         {
           "german": "drei",
           "translations": {
-            "en": "three"
+            "answer": "three"
           }
         },
         {
           "german": "vier",
           "translations": {
-            "en": "four"
+            "answer": "four"
           }
         }
       ]
@@ -93,19 +105,19 @@
     {
       "name": "more numbers",
       "languages": [
-        "en"
+        "answer"
       ],
       "items": [
         {
           "german": "acht",
           "translations": {
-            "en": "eight"
+            "answer": "eight"
           }
         },
         {
           "german": "neun",
           "translations": {
-            "en": "nine"
+            "answer": "nine"
           }
         }
       ]

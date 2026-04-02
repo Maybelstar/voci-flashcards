@@ -16,6 +16,8 @@ SUPPORTED_LANGUAGES = {
     "en": "english",
     "fr": "french",
 }
+GENERIC_QUESTION_HEADERS = ("fragen", "frage")
+GENERIC_ANSWER_HEADERS = ("antworten", "antwort")
 
 
 def parse_shared_strings(archive: zipfile.ZipFile) -> list[str]:
@@ -79,9 +81,29 @@ def parse_sheet(rows: list[dict[str, str]], sheet_name: str) -> dict[str, object
 
     header_row = rows[0]
     column_lookup = {value.strip().lower(): key for key, value in header_row.items()}
+    question_column = next((column_lookup.get(header) for header in GENERIC_QUESTION_HEADERS if column_lookup.get(header)), None)
+    answer_column = next((column_lookup.get(header) for header in GENERIC_ANSWER_HEADERS if column_lookup.get(header)), None)
+
+    if question_column and answer_column:
+        items: list[dict[str, object]] = []
+
+        for row in rows[1:]:
+            question = row.get(question_column, "").strip()
+            answer = row.get(answer_column, "").strip()
+
+            if question and answer:
+                items.append({"german": question, "translations": {"answer": answer}})
+
+        if not items:
+            return None
+
+        return {"name": sheet_name, "languages": ["answer"], "items": items}
+
     german_column = column_lookup.get("de")
     if not german_column:
-        raise ValueError(f"Das Blatt '{sheet_name}' braucht in der ersten Zeile eine Spalte 'DE'.")
+        raise ValueError(
+            f"Das Blatt '{sheet_name}' braucht in der ersten Zeile entweder 'Fragen'/'Antworten' oder 'DE' plus 'EN'/'FR'."
+        )
 
     available_languages = [
         language_code

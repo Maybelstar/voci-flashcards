@@ -17,7 +17,7 @@ const state = {
   difficultCardIds: new Set(),
   selectedCardIds: new Set(),
   advanceTimerId: null,
-  repeatCount: 5,
+  repeatCount: 1,
 };
 
 const elements = {
@@ -352,7 +352,7 @@ function handleWrongAnswer(answer) {
   rightColumn.className = "feedback-column";
 
   const enteredLine = document.createElement("p");
-  enteredLine.className = "feedback-detail";
+  enteredLine.className = "feedback-detail feedback-detail-entered";
   const enteredLabel = document.createElement("span");
   enteredLabel.className = "feedback-key";
   enteredLabel.textContent = "Deine Eingabe: ";
@@ -363,7 +363,7 @@ function handleWrongAnswer(answer) {
   enteredLine.appendChild(enteredValue);
 
   const correctLine = document.createElement("p");
-  correctLine.className = "feedback-detail";
+  correctLine.className = "feedback-detail feedback-detail-correct";
   const correctLabel = document.createElement("span");
   correctLabel.className = "feedback-key";
   correctLabel.textContent = "Richtige Antwort: ";

@@ -192,13 +192,14 @@ h1 {
   font-size: 0.84rem;
 }
 
-.word-picker-done {
+.word-picker-actions .word-picker-done {
   background: linear-gradient(135deg, #1f4f8a, #163964);
   box-shadow: 0 10px 20px rgba(31, 79, 138, 0.24);
+  color: #ffffff;
 }
 
-.word-picker-done:hover,
-.word-picker-done:focus-visible {
+.word-picker-actions .word-picker-done:hover,
+.word-picker-actions .word-picker-done:focus-visible {
   box-shadow: 0 14px 24px rgba(31, 79, 138, 0.3);
 }
 
@@ -442,6 +443,7 @@ button:focus-visible {
 
 .feedback-layout {
   display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 12px 18px;
   align-items: start;
 }
@@ -464,18 +466,28 @@ button:focus-visible {
   margin-top: 8px;
 }
 
+.feedback-detail {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(87, 104, 146, 0.12);
+}
+
+.feedback-detail-entered {
+  background: rgba(76, 178, 184, 0.12);
+}
+
+.feedback-detail-correct {
+  background: rgba(217, 92, 18, 0.12);
+}
+
 .feedback-key {
-  color: var(--accent-cool);
+  color: #1f4f8a;
+  font-weight: 800;
 }
 
 .feedback-value {
-  color: var(--accent-deep);
-}
-
-@media (min-width: 700px) {
-  .feedback-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
-  }
+  color: #0d5a5f;
+  font-weight: 800;
 }
 
 .feedback.is-success {

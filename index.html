@@ -3,26 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Voci Lernkarten</title>
+    <title>Lernkarten</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" defer></script>
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v3</p>
+      <p class="version-badge">v4</p>
 
       <section class="hero-panel">
-        <p class="eyebrow">Deutsch -> Englisch / Französisch</p>
-        <h1>Voci Lernkarten</h1>
-        <p class="hero-copy">
-          Gib die passende Übersetzung ein. Jedes Wort kommt 5 Mal in
-          gemischter Reihenfolge dran.
-        </p>
+        <h1>Lernkarten</h1>
+
+        <div class="settings-panel">
+          <label class="settings-label" for="repeat-count">Wie oft soll jedes Wort drankommen?</label>
+          <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="5" />
+        </div>
       </section>
 
       <section class="game-card" aria-live="polite">
         <div class="language-picker hidden" id="language-picker">
-          <p class="status-label">Lernsprache</p>
+          <p class="status-label">Lernmodus</p>
           <div class="language-buttons" id="language-buttons"></div>
         </div>
 
@@ -50,7 +50,7 @@
         </div>
 
         <div id="game-state" class="hidden">
-          <p class="prompt-label" id="prompt-label">Übersetze dieses Wort</p>
+          <p class="prompt-label" id="prompt-label">Was ist die Antwort?</p>
           <div class="flashcard-word" id="german-word">...</div>
           <p class="card-progress" id="card-progress">Schon richtig gelöst: 0 / 5</p>
 

@@ -58,24 +58,15 @@ body::after {
 
 .page-shell {
   position: relative;
-  width: min(1040px, calc(100vw - 28px));
+  width: min(860px, calc(100vw - 28px));
   margin: 0 auto;
-  padding: 18px 0 20px;
+  padding: 22px 0 28px;
   min-height: 100vh;
-}
-
-@media (min-width: 860px) {
-  .page-shell {
-    display: grid;
-    grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
-    gap: 18px;
-    align-items: start;
-  }
 }
 
 .version-badge {
   position: absolute;
-  top: 4px;
+  top: 0;
   right: 0;
   margin: 0;
   padding: 7px 12px;
@@ -91,37 +82,53 @@ body::after {
 }
 
 .hero-panel {
-  padding: 24px 8px 8px;
-}
-
-.eyebrow {
-  margin: 0 0 8px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  color: var(--accent-deep);
-  font-weight: 700;
+  padding: 36px 8px 0;
 }
 
 h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 3vw, 3.4rem);
+  font-size: clamp(2.2rem, 3.2vw, 3.5rem);
   line-height: 0.96;
 }
 
-.hero-copy {
-  max-width: 420px;
-  margin: 12px 0 0;
-  font-size: 0.98rem;
-  line-height: 1.45;
+.settings-panel {
+  margin-top: 18px;
+  max-width: 320px;
+}
+
+.settings-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--text-soft);
+}
+
+.settings-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid rgba(82, 102, 142, 0.18);
+  background: rgba(255, 255, 255, 0.86);
+  font: inherit;
+  font-size: 1rem;
+  color: var(--text-main);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: rgba(76, 178, 184, 0.8);
+  box-shadow: 0 0 0 5px rgba(76, 178, 184, 0.16);
+  transform: translateY(-1px);
 }
 
 .game-card {
   position: relative;
   overflow: hidden;
   padding: 18px 20px 16px;
+  margin-top: 22px;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--panel);
@@ -341,6 +348,10 @@ button:focus-visible {
   .version-badge {
     top: 0;
     right: 4px;
+  }
+
+  .hero-panel {
+    padding-top: 30px;
   }
 
   .game-card {

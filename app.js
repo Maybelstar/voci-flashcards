@@ -1,4 +1,3 @@
-const GOAL_PER_CARD = 5;
 const ADVANCE_DELAY_MS = 700;
 const LANGUAGE_LABELS = {
   en: "Englisch",
@@ -12,6 +11,7 @@ const state = {
   currentLanguage: "en",
   currentMode: "loading",
   advanceTimerId: null,
+  repeatCount: 5,
 };
 
 const elements = {
@@ -34,6 +34,7 @@ const elements = {
   answerLabel: document.querySelector("#answer-label"),
   languagePicker: document.querySelector("#language-picker"),
   languageButtons: document.querySelector("#language-buttons"),
+  repeatCount: document.querySelector("#repeat-count"),
 };
 
 function normalizeAnswer(value) {
@@ -83,7 +84,7 @@ function getPlayableCards() {
 }
 
 function getMasteredCards() {
-  return getPlayableCards().filter((card) => card.correctCount >= GOAL_PER_CARD);
+  return getPlayableCards().filter((card) => card.correctCount >= state.repeatCount);
 }
 
 function buildRound(cards, previousCardId = null) {
@@ -103,7 +104,7 @@ function buildQueue(cards) {
   const queue = [];
   let previousCardId = null;
 
-  for (let roundIndex = 0; roundIndex < GOAL_PER_CARD; roundIndex += 1) {
+  for (let roundIndex = 0; roundIndex < state.repeatCount; roundIndex += 1) {
     const round = buildRound(cards, previousCardId);
     queue.push(...round);
     previousCardId = round.length > 0 ? round[round.length - 1].id : previousCardId;
@@ -123,7 +124,7 @@ function setFeedback(message, type = "") {
 
 function updateProgress() {
   const playableCards = getPlayableCards();
-  const totalTarget = playableCards.length * GOAL_PER_CARD;
+  const totalTarget = playableCards.length * state.repeatCount;
   const totalWins = playableCards.reduce((sum, card) => sum + card.correctCount, 0);
   const mastered = getMasteredCards().length;
   const progressPercent = totalTarget === 0 ? 0 : (totalWins / totalTarget) * 100;
@@ -133,7 +134,7 @@ function updateProgress() {
   elements.progressFill.style.width = `${progressPercent}%`;
 
   if (state.currentCard) {
-    elements.cardProgress.textContent = `Schon richtig gelöst: ${state.currentCard.correctCount} / ${GOAL_PER_CARD}`;
+    elements.cardProgress.textContent = `Schon richtig gelöst: ${state.currentCard.correctCount} / ${state.repeatCount}`;
   }
 }
 
@@ -218,7 +219,7 @@ function handleWrongAnswer() {
   elements.answerInput.readOnly = true;
   elements.submitButton.textContent = "Weiter";
   setFeedback(
-    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Drücke Enter, dann kannst du es noch einmal versuchen.`,
+    `Falsch. Die richtige Antwort ist "${getCurrentTranslation(state.currentCard)}". Drücke auf "Weiter", dann kannst du es noch einmal versuchen.`,
     "is-error"
   );
   focusInput();
@@ -274,9 +275,19 @@ function showError(message) {
 }
 
 function updateLanguageCopy() {
-  const languageLabel = getLanguageLabel(state.currentLanguage);
-  elements.promptLabel.textContent = `Wie heißt dieses Wort auf ${languageLabel}?`;
-  elements.answerLabel.textContent = `Antwort auf ${languageLabel}`;
+  elements.promptLabel.textContent = "Was ist die Antwort?";
+  elements.answerLabel.textContent = "Deine Antwort";
+}
+
+function applyRepeatCount(value) {
+  const parsed = Number.parseInt(value, 10);
+  const safeValue = Number.isFinite(parsed) ? Math.min(25, Math.max(1, parsed)) : 5;
+  state.repeatCount = safeValue;
+  elements.repeatCount.value = String(safeValue);
+
+  if (state.cards.length > 0 && state.currentMode !== "loading" && state.currentMode !== "error") {
+    startGame();
+  }
 }
 
 function renderLanguagePicker(languages) {
@@ -352,5 +363,11 @@ async function loadVocabulary() {
 
 elements.answerForm.addEventListener("submit", handleSubmit);
 elements.restartButton.addEventListener("click", startGame);
+elements.repeatCount.addEventListener("change", (event) => {
+  applyRepeatCount(event.target.value);
+});
+elements.repeatCount.addEventListener("blur", (event) => {
+  applyRepeatCount(event.target.value);
+});
 
 loadVocabulary();

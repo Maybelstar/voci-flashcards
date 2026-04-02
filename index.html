@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Lernkarten</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <script src="app.js" defer></script>
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v11</p>
+      <p class="version-badge">v12</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
@@ -23,6 +24,20 @@
           <div class="settings-field">
             <label class="settings-label" for="repeat-count">Wie oft soll jede Frage drankommen?</label>
             <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="1" />
+          </div>
+
+          <div class="settings-field settings-field-wide">
+            <p class="settings-label">Listen importieren</p>
+            <div class="import-actions">
+              <label class="upload-button" for="excel-upload">Excel-Datei hochladen</label>
+              <input id="excel-upload" class="hidden-upload" type="file" accept=".xlsx,.xls" />
+              <button id="reset-uploaded-lists" class="secondary-button import-reset" type="button">
+                Hochgeladene Listen zurücksetzen
+              </button>
+            </div>
+            <p class="import-note" id="import-status">
+              Hochgeladene Listen bleiben in diesem Browser gespeichert und ergänzen deine Standardlisten.
+            </p>
           </div>
 
           <div class="settings-field settings-field-wide">

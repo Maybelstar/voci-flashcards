@@ -458,10 +458,6 @@ button:focus-visible {
   margin: 0;
 }
 
-.feedback-sub {
-  margin-top: 4px;
-}
-
 .feedback-detail + .feedback-detail {
   margin-top: 8px;
 }
@@ -473,20 +469,22 @@ button:focus-visible {
 }
 
 .feedback-detail-entered {
-  background: rgba(76, 178, 184, 0.12);
+  background: rgba(187, 76, 63, 0.14);
+  border-color: rgba(187, 76, 63, 0.2);
 }
 
 .feedback-detail-correct {
-  background: rgba(217, 92, 18, 0.12);
+  background: rgba(36, 138, 82, 0.14);
+  border-color: rgba(36, 138, 82, 0.2);
 }
 
 .feedback-key {
-  color: #1f4f8a;
+  color: var(--text-main);
   font-weight: 800;
 }
 
 .feedback-value {
-  color: #0d5a5f;
+  color: var(--text-main);
   font-weight: 800;
 }
 

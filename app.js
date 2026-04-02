@@ -339,14 +339,9 @@ function handleWrongAnswer(answer) {
 
   const wrongTitle = document.createElement("p");
   wrongTitle.className = "feedback-main";
-  wrongTitle.textContent = "Falsch.";
-
-  const wrongHint = document.createElement("p");
-  wrongHint.className = "feedback-sub";
-  wrongHint.textContent = 'Drücke auf "Weiter", dann kannst du es noch einmal versuchen.';
+  wrongTitle.textContent = 'Falsch. Drücke auf "Weiter", dann kannst du es noch einmal versuchen.';
 
   leftColumn.appendChild(wrongTitle);
-  leftColumn.appendChild(wrongHint);
 
   const rightColumn = document.createElement("div");
   rightColumn.className = "feedback-column";
@@ -358,7 +353,7 @@ function handleWrongAnswer(answer) {
   enteredLabel.textContent = "Deine Eingabe: ";
   const enteredValue = document.createElement("span");
   enteredValue.className = "feedback-value";
-  enteredValue.textContent = `"${enteredAnswer}"`;
+  enteredValue.textContent = enteredAnswer;
   enteredLine.appendChild(enteredLabel);
   enteredLine.appendChild(enteredValue);
 
@@ -369,7 +364,7 @@ function handleWrongAnswer(answer) {
   correctLabel.textContent = "Richtige Antwort: ";
   const correctValue = document.createElement("span");
   correctValue.className = "feedback-value";
-  correctValue.textContent = `"${correctAnswer}"`;
+  correctValue.textContent = correctAnswer;
   correctLine.appendChild(correctLabel);
   correctLine.appendChild(correctValue);
 

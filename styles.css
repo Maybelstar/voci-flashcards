@@ -447,7 +447,7 @@ button {
   background: linear-gradient(135deg, var(--accent), var(--accent-deep));
   color: white;
   font: inherit;
-  font-weight: 800;
+  font-weight: 500;
   cursor: pointer;
   box-shadow: 0 12px 24px rgba(217, 92, 18, 0.22);
   transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
@@ -460,17 +460,17 @@ button {
   text-decoration: none;
   padding: 6px 12px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #235f4d, #173f34);
+  background: linear-gradient(135deg, #2d6cb2, #1f4f8a);
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 500;
   font-size: 0.84rem;
   line-height: 1;
-  box-shadow: 0 12px 24px rgba(35, 95, 77, 0.22);
+  box-shadow: 0 10px 22px rgba(31, 79, 138, 0.22);
 }
 
 .sheet-link-button:hover,
 .sheet-link-button:focus-visible {
-  box-shadow: 0 16px 28px rgba(35, 95, 77, 0.28);
+  box-shadow: 0 14px 26px rgba(31, 79, 138, 0.28);
   filter: saturate(1.04);
 }
 

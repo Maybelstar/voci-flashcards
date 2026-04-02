@@ -102,10 +102,6 @@ h1 {
   min-width: 0;
 }
 
-.settings-field > .sheet-link-button {
-  margin-top: 8px;
-}
-
 .settings-field-wide {
   grid-column: 1 / -1;
 }
@@ -116,6 +112,14 @@ h1 {
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-soft);
+}
+
+.settings-label-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
 }
 
 .settings-input {
@@ -453,11 +457,13 @@ button {
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  padding: 10px 16px;
+  padding: 6px 12px;
   border-radius: 999px;
   background: linear-gradient(135deg, #235f4d, #173f34);
   color: #ffffff;
   font-weight: 800;
+  font-size: 0.84rem;
+  line-height: 1;
   box-shadow: 0 12px 24px rgba(35, 95, 77, 0.22);
 }
 
@@ -608,7 +614,8 @@ button:disabled {
   }
 
   .status-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 
   button {
@@ -616,7 +623,11 @@ button:disabled {
     justify-self: stretch;
   }
 
+  .settings-label-inline {
+    align-items: flex-start;
+  }
+
   .sheet-link-button {
-    width: 100%;
+    width: auto;
   }
 }

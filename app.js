@@ -206,10 +206,10 @@ function renderCompletionState() {
   const difficultCards = getDifficultCards();
   const repeatText = state.repeatCount === 1 ? "1 Mal" : `${state.repeatCount} Mal`;
 
-  elements.completeMessage.textContent = `Du hast alle Wörter ${repeatText} richtig beantwortet.`;
+  elements.completeMessage.textContent = `Du hast alle Fragen ${repeatText} richtig beantwortet.`;
 
   if (difficultCards.length === 0) {
-    elements.difficultSummary.textContent = 'Super! Alle Wörter waren immer sofort richtig. Du kannst unten gleich wieder "Alle noch einmal" wählen.';
+    elements.difficultSummary.textContent = 'Super! Alle Fragen waren immer sofort richtig. Du kannst unten gleich wieder "Alle noch einmal" wählen.';
     elements.difficultList.innerHTML = "";
     elements.difficultList.classList.add("hidden");
     elements.difficultButton.classList.add("hidden");
@@ -217,9 +217,9 @@ function renderCompletionState() {
   }
 
   if (difficultCards.length === 1) {
-    elements.difficultSummary.textContent = "1 schwieriges Wort war nicht gleich beim ersten Versuch richtig.";
+    elements.difficultSummary.textContent = "1 schwierige Frage war nicht gleich beim ersten Versuch richtig.";
   } else {
-    elements.difficultSummary.textContent = `${difficultCards.length} schwierige Wörter waren nicht gleich beim ersten Versuch richtig.`;
+    elements.difficultSummary.textContent = `${difficultCards.length} schwierige Fragen waren nicht gleich beim ersten Versuch richtig.`;
   }
   elements.difficultList.innerHTML = "";
 
@@ -587,7 +587,7 @@ async function loadVocabulary() {
     showError(
       error instanceof Error
         ? `${error.message} Wenn du voci.xlsx geändert hast, führe vorher build_vocabulary.py aus.`
-        : "Die Wörter konnten nicht geladen werden."
+        : "Die Fragen konnten nicht geladen werden."
     );
   }
 }

@@ -21,14 +21,14 @@
           </div>
 
           <div class="settings-field">
-            <label class="settings-label" for="repeat-count">Wie oft soll jedes Wort drankommen?</label>
+            <label class="settings-label" for="repeat-count">Wie oft soll jede Frage drankommen?</label>
             <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="1" />
           </div>
 
           <div class="settings-field settings-field-wide">
             <div class="word-picker" id="word-picker">
               <button id="word-picker-toggle" class="word-picker-toggle" type="button" aria-expanded="false">
-                <span>Wörter auswählen</span>
+                <span>Fragen auswählen</span>
                 <span class="word-picker-count" id="word-picker-count">0 von 0 ausgewählt</span>
               </button>
               <div class="word-picker-panel hidden" id="word-picker-panel">
@@ -56,7 +56,7 @@
             <p class="status-value" id="overall-progress">0 / 0</p>
           </div>
           <div>
-            <p class="status-label">Fertige Wörter</p>
+            <p class="status-label">Fertige Fragen</p>
             <p class="status-value" id="mastered-progress">0 / 0</p>
           </div>
         </div>
@@ -66,7 +66,7 @@
         </div>
 
         <div id="loading-state" class="message-panel">
-          <p>Deine Wörterliste wird geladen ...</p>
+          <p>Deine Fragenliste wird geladen ...</p>
         </div>
 
         <div id="error-state" class="message-panel hidden">
@@ -74,7 +74,7 @@
         </div>
 
         <div id="selection-state" class="message-panel hidden">
-          <p>Wähle mindestens ein Wort aus, damit das Spiel starten kann.</p>
+          <p>Wähle mindestens eine Frage aus, damit das Spiel starten kann.</p>
         </div>
 
         <div id="game-state" class="hidden">
@@ -101,12 +101,12 @@
 
         <div id="complete-state" class="message-panel hidden">
           <p class="complete-title">Geschafft!</p>
-          <p id="complete-message">Du hast alle Wörter richtig beantwortet.</p>
+          <p id="complete-message">Du hast alle Fragen richtig beantwortet.</p>
           <p id="difficult-summary"></p>
           <ul class="difficult-list hidden" id="difficult-list"></ul>
           <div class="complete-actions">
             <button id="restart-button" type="button">Alle noch einmal</button>
-            <button id="difficult-button" class="secondary-button hidden" type="button">Nur schwierige Wörter üben</button>
+            <button id="difficult-button" class="secondary-button hidden" type="button">Nur schwierige Fragen üben</button>
           </div>
         </div>
       </section>

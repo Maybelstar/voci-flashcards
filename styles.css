@@ -145,7 +145,8 @@ h1 {
   .settings-panel {
     grid-template-columns: minmax(0, 1.6fr) minmax(180px, 0.9fr);
     align-items: end;
-    max-width: 720px;
+    width: 100%;
+    max-width: none;
   }
 }
 

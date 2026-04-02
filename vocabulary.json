@@ -1,61 +1,106 @@
 {
-  "languages": [
-    "en"
-  ],
-  "items": [
+  "lists": [
     {
-      "german": "ein",
-      "translations": {
-        "en": "one"
-      }
+      "name": "Liste 1",
+      "languages": [
+        "en"
+      ],
+      "items": [
+        {
+          "german": "ein",
+          "translations": {
+            "en": "one"
+          }
+        },
+        {
+          "german": "zwei",
+          "translations": {
+            "en": "two"
+          }
+        },
+        {
+          "german": "drei",
+          "translations": {
+            "en": "three"
+          }
+        },
+        {
+          "german": "vier",
+          "translations": {
+            "en": "four"
+          }
+        },
+        {
+          "german": "Haus",
+          "translations": {
+            "en": "house"
+          }
+        },
+        {
+          "german": "Maus",
+          "translations": {
+            "en": "mouse"
+          }
+        },
+        {
+          "german": "Katze",
+          "translations": {
+            "en": "cat"
+          }
+        },
+        {
+          "german": "Hund",
+          "translations": {
+            "en": "dog"
+          }
+        },
+        {
+          "german": "Wie viele Kantone zählt die Schweiz?",
+          "translations": {
+            "en": "26"
+          }
+        }
+      ]
     },
     {
-      "german": "zwei",
-      "translations": {
-        "en": "two"
-      }
+      "name": "Liste 2",
+      "languages": [
+        "en"
+      ],
+      "items": [
+        {
+          "german": "sechs",
+          "translations": {
+            "en": "six"
+          }
+        },
+        {
+          "german": "sieben",
+          "translations": {
+            "en": "seven"
+          }
+        }
+      ]
     },
     {
-      "german": "drei",
-      "translations": {
-        "en": "three"
-      }
-    },
-    {
-      "german": "vier",
-      "translations": {
-        "en": "four"
-      }
-    },
-    {
-      "german": "Haus",
-      "translations": {
-        "en": "house"
-      }
-    },
-    {
-      "german": "Maus",
-      "translations": {
-        "en": "mouse"
-      }
-    },
-    {
-      "german": "Katze",
-      "translations": {
-        "en": "cat"
-      }
-    },
-    {
-      "german": "Hund",
-      "translations": {
-        "en": "dog"
-      }
-    },
-    {
-      "german": "Wie viele Kantone zählt die Schweiz?",
-      "translations": {
-        "en": "26"
-      }
+      "name": "Liste 3",
+      "languages": [
+        "en"
+      ],
+      "items": [
+        {
+          "german": "acht",
+          "translations": {
+            "en": "eight"
+          }
+        },
+        {
+          "german": "neun",
+          "translations": {
+            "en": "nine"
+          }
+        }
+      ]
     }
   ]
 }

@@ -9,12 +9,15 @@
   </head>
   <body>
     <main class="page-shell">
-      <p class="version-badge">v5</p>
+      <p class="version-badge">v7</p>
 
       <section class="hero-panel">
         <h1>Lernkarten</h1>
 
         <div class="settings-panel">
+          <label class="settings-label" for="list-select">Welche Liste möchtest du üben?</label>
+          <select id="list-select" class="settings-input"></select>
+
           <label class="settings-label" for="repeat-count">Wie oft soll jedes Wort drankommen?</label>
           <input id="repeat-count" class="settings-input" type="number" min="1" max="25" step="1" value="5" />
         </div>

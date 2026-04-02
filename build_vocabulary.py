@@ -47,49 +47,41 @@ def read_cell_value(cell: ET.Element, shared_strings: list[str]) -> str:
     return raw_value
 
 
-def load_vocabulary() -> tuple[list[str], list[dict[str, object]]]:
-    if not WORKBOOK.exists():
-        raise FileNotFoundError(f"Workbook not found: {WORKBOOK}")
+def load_sheet_rows(
+    archive: zipfile.ZipFile,
+    shared_strings: list[str],
+    relationship_map: dict[str, str],
+    sheet: ET.Element,
+) -> list[dict[str, str]]:
+    relationship_id = sheet.attrib.get(f"{{{OFFICE_DOC_REL}}}id")
+    if relationship_id is None or relationship_id not in relationship_map:
+        raise ValueError("Unable to locate the worksheet inside the workbook.")
 
-    with zipfile.ZipFile(WORKBOOK) as archive:
-        shared_strings = parse_shared_strings(archive)
-        workbook = ET.fromstring(archive.read("xl/workbook.xml"))
-        relationships = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
-        relationship_map = {
-            rel.attrib["Id"]: rel.attrib["Target"]
-            for rel in relationships.findall("rel:Relationship", REL_NS)
-        }
-
-        sheets = workbook.find("main:sheets", XML_NS)
-        if sheets is None or not list(sheets):
-            return []
-
-        first_sheet = list(sheets)[0]
-        relationship_id = first_sheet.attrib.get(f"{{{OFFICE_DOC_REL}}}id")
-        if relationship_id is None or relationship_id not in relationship_map:
-            raise ValueError("Unable to locate the worksheet inside the workbook.")
-
-        worksheet = ET.fromstring(archive.read(f"xl/{relationship_map[relationship_id]}"))
-        sheet_data = worksheet.find("main:sheetData", XML_NS)
-        if sheet_data is None:
-            return []
-
-        rows: list[dict[str, str]] = []
-        for row in sheet_data.findall("main:row", XML_NS):
-            row_values: dict[str, str] = {}
-            for cell in row.findall("main:c", XML_NS):
-                row_values[column_name(cell.attrib.get("r", ""))] = read_cell_value(cell, shared_strings)
-            if row_values:
-                rows.append(row_values)
-
-    if not rows:
+    worksheet = ET.fromstring(archive.read(f"xl/{relationship_map[relationship_id]}"))
+    sheet_data = worksheet.find("main:sheetData", XML_NS)
+    if sheet_data is None:
         return []
+
+    rows: list[dict[str, str]] = []
+    for row in sheet_data.findall("main:row", XML_NS):
+        row_values: dict[str, str] = {}
+        for cell in row.findall("main:c", XML_NS):
+            row_values[column_name(cell.attrib.get("r", ""))] = read_cell_value(cell, shared_strings)
+        if row_values:
+            rows.append(row_values)
+
+    return rows
+
+
+def parse_sheet(rows: list[dict[str, str]], sheet_name: str) -> dict[str, object] | None:
+    if not rows:
+        return None
 
     header_row = rows[0]
     column_lookup = {value.strip().lower(): key for key, value in header_row.items()}
     german_column = column_lookup.get("de")
     if not german_column:
-        raise ValueError("Die Excel-Datei braucht in der ersten Zeile eine Spalte 'DE'.")
+        raise ValueError(f"Das Blatt '{sheet_name}' braucht in der ersten Zeile eine Spalte 'DE'.")
 
     available_languages = [
         language_code
@@ -98,7 +90,7 @@ def load_vocabulary() -> tuple[list[str], list[dict[str, object]]]:
     ]
 
     if not available_languages:
-        raise ValueError("Die Excel-Datei braucht mindestens eine Spalte 'EN' oder 'FR'.")
+        raise ValueError(f"Das Blatt '{sheet_name}' braucht mindestens eine Spalte 'EN' oder 'FR'.")
 
     items: list[dict[str, object]] = []
 
@@ -116,14 +108,46 @@ def load_vocabulary() -> tuple[list[str], list[dict[str, object]]]:
         if translations:
             items.append({"german": german, "translations": translations})
 
-    return available_languages, items
+    if not items:
+        return None
+
+    return {"name": sheet_name, "languages": available_languages, "items": items}
+
+
+def load_vocabulary() -> list[dict[str, object]]:
+    if not WORKBOOK.exists():
+        raise FileNotFoundError(f"Workbook not found: {WORKBOOK}")
+
+    with zipfile.ZipFile(WORKBOOK) as archive:
+        shared_strings = parse_shared_strings(archive)
+        workbook = ET.fromstring(archive.read("xl/workbook.xml"))
+        relationships = ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))
+        relationship_map = {
+            rel.attrib["Id"]: rel.attrib["Target"]
+            for rel in relationships.findall("rel:Relationship", REL_NS)
+        }
+
+        sheets = workbook.find("main:sheets", XML_NS)
+        if sheets is None or not list(sheets):
+            return []
+
+        parsed_lists: list[dict[str, object]] = []
+
+        for sheet in list(sheets):
+            rows = load_sheet_rows(archive, shared_strings, relationship_map, sheet)
+            parsed_sheet = parse_sheet(rows, sheet.attrib["name"])
+            if parsed_sheet is not None:
+                parsed_lists.append(parsed_sheet)
+
+    return parsed_lists
 
 
 def main() -> None:
-    languages, items = load_vocabulary()
-    payload = {"languages": languages, "items": items}
+    lists = load_vocabulary()
+    payload = {"lists": lists}
     OUTPUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"Wrote {len(items)} vocabulary items to {OUTPUT.name}")
+    total_items = sum(len(item["items"]) for item in lists)
+    print(f"Wrote {len(lists)} lists with {total_items} vocabulary items to {OUTPUT.name}")
 
 
 if __name__ == "__main__":

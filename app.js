@@ -5,11 +5,13 @@ const LANGUAGE_LABELS = {
 };
 
 const state = {
+  lists: [],
   cards: [],
   activeCards: [],
   cardQueue: [],
   currentCard: null,
   currentLanguage: "en",
+  currentListName: "",
   currentMode: "loading",
   currentAttemptHadMistake: false,
   difficultCardIds: new Set(),
@@ -37,6 +39,7 @@ const elements = {
   answerLabel: document.querySelector("#answer-label"),
   languagePicker: document.querySelector("#language-picker"),
   languageButtons: document.querySelector("#language-buttons"),
+  listSelect: document.querySelector("#list-select"),
   repeatCount: document.querySelector("#repeat-count"),
   completeMessage: document.querySelector("#complete-message"),
   difficultSummary: document.querySelector("#difficult-summary"),
@@ -45,7 +48,7 @@ const elements = {
 };
 
 function normalizeAnswer(value) {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
+  return value.trim().replace(/\s+/g, " ");
 }
 
 function getAcceptedAnswers(english) {
@@ -88,6 +91,10 @@ function shuffleCards(items) {
 
 function getPlayableCards() {
   return state.cards.filter((card) => getCurrentTranslation(card));
+}
+
+function getCurrentList() {
+  return state.lists.find((list) => list.name === state.currentListName) || null;
 }
 
 function getMasteredCards() {
@@ -168,7 +175,7 @@ function renderCompletionState() {
   elements.completeMessage.textContent = `Du hast alle Wörter ${repeatText} richtig beantwortet.`;
 
   if (difficultCards.length === 0) {
-    elements.difficultSummary.textContent = "Super! Alle Wörter waren immer sofort richtig.";
+    elements.difficultSummary.textContent = 'Super! Alle Wörter waren immer sofort richtig. Du kannst unten gleich wieder "Alle noch einmal" wählen.';
     elements.difficultList.innerHTML = "";
     elements.difficultList.classList.add("hidden");
     elements.difficultButton.classList.add("hidden");
@@ -334,6 +341,35 @@ function updateLanguageCopy() {
   elements.answerLabel.textContent = "Deine Antwort";
 }
 
+function applyListSelection(listName) {
+  const selectedList = state.lists.find((list) => list.name === listName) || state.lists[0] || null;
+  if (!selectedList) {
+    state.cards = [];
+    state.activeCards = [];
+    state.currentListName = "";
+    return;
+  }
+
+  state.currentListName = selectedList.name;
+  elements.listSelect.value = selectedList.name;
+  state.cards = selectedList.items.map((item, index) => ({
+    id: `${selectedList.name}-${index}-${item.german}`,
+    german: item.german,
+    translations: item.translations || {},
+    correctCount: 0,
+  }));
+
+  const availableLanguages = selectedList.languages || ["en"];
+  state.currentLanguage = availableLanguages.includes("en") ? "en" : availableLanguages[0];
+  renderLanguagePicker(availableLanguages);
+  updateLanguageCopy();
+  updateProgress();
+
+  if (state.currentMode !== "loading" && state.currentMode !== "error") {
+    startGame();
+  }
+}
+
 function applyRepeatCount(value) {
   const parsed = Number.parseInt(value, 10);
   const safeValue = Number.isFinite(parsed) ? Math.min(25, Math.max(1, parsed)) : 5;
@@ -388,25 +424,22 @@ async function loadVocabulary() {
       throw new Error(payload.error || "Failed to load vocabulary.");
     }
 
-    const items = payload.items || [];
-    const languages = Array.isArray(payload.languages) ? payload.languages : ["en"];
+    const lists = Array.isArray(payload.lists) ? payload.lists : [];
 
-    if (items.length === 0) {
-      throw new Error("In der Datei vocabulary.json wurden keine Wörter gefunden.");
+    if (lists.length === 0) {
+      throw new Error("In der Datei vocabulary.json wurden keine Listen gefunden.");
     }
 
-    state.cards = items.map((item, index) => ({
-      id: `${index}-${item.german}`,
-      german: item.german,
-      translations: item.translations || {},
-      correctCount: 0,
-    }));
-    state.currentLanguage = languages.includes("en") ? "en" : languages[0];
-    state.activeCards = getPlayableCards();
+    state.lists = lists;
+    elements.listSelect.innerHTML = "";
+    lists.forEach((list) => {
+      const option = document.createElement("option");
+      option.value = list.name;
+      option.textContent = list.name;
+      elements.listSelect.appendChild(option);
+    });
 
-    renderLanguagePicker(languages);
-    updateLanguageCopy();
-    updateProgress();
+    applyListSelection(lists[0].name);
     startGame();
   } catch (error) {
     showError(
@@ -418,7 +451,9 @@ async function loadVocabulary() {
 }
 
 elements.answerForm.addEventListener("submit", handleSubmit);
-elements.restartButton.addEventListener("click", startGame);
+elements.restartButton.addEventListener("click", () => {
+  startGame();
+});
 elements.difficultButton.addEventListener("click", () => {
   startGame(getDifficultCards());
 });
@@ -427,6 +462,9 @@ elements.repeatCount.addEventListener("change", (event) => {
 });
 elements.repeatCount.addEventListener("blur", (event) => {
   applyRepeatCount(event.target.value);
+});
+elements.listSelect.addEventListener("change", (event) => {
+  applyListSelection(event.target.value);
 });
 
 loadVocabulary();
